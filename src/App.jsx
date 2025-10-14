@@ -22,6 +22,8 @@ import { BuyersManagementPage } from './features/dashboard/pages/sales/pages/Buy
 import { LeasesManagementPage } from './features/dashboard/pages/leases/pages/LeasesManagementPage'
 import { RenantManagementPage } from './features/dashboard/pages/leases/pages/RenantManagementPage'
 import AppointmentPage from './features/dashboard/pages/appointment/AppointmentPage'
+import Reports from './features/dashboard/pages/reports/Reports'
+import Roles from './features/dashboard/pages/roles/Roles'
 
 function App() {
   return (
@@ -159,6 +161,22 @@ function App() {
           element={
             <DashboardLayout>
               <AppointmentPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/reportes/gestion"
+          element={
+            <DashboardLayout>
+              <Reports />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/seguridad/roles"
+          element={
+            <DashboardLayout>
+              <Roles />
             </DashboardLayout>
           }
         />
