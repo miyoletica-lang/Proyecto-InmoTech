@@ -1,4 +1,6 @@
 import React from "react";
+import ReactDOM from 'react-dom';
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Building2,
   Users,
@@ -166,328 +168,152 @@ export default function VerRolModal({ isOpen, onClose, rol }) {
       total + getPermisosGrupo(modulo.key).length, 0
     );
 
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
-          {/* Header especial para Super Admin */}
-          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white p-6 relative">
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors"
-              aria-label="Cerrar"
-            >
-              <X className="h-6 w-6" />
-            </button>
-            
-            <div className="flex items-center space-x-4">
-              <div className="bg-white/20 p-3 rounded-lg">
-                <Crown className="h-8 w-8" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold flex items-center space-x-2">
-                  <span>Super Administrador</span>
-                  <Crown className="h-6 w-6" />
-                </h2>
-                <p className="text-orange-100">Acceso completo a todos los módulos y permisos del sistema</p>
-              </div>
-            </div>
-          </div>
+    return ReactDOM.createPortal(
+      <AnimatePresence>
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={onClose}
+        />
 
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-            {/* Información del rol */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-200">
-                <label className="block text-sm font-medium text-amber-700 mb-2">Nombre del Rol</label>
-                <div className="text-xl font-semibold text-amber-900 flex items-center space-x-2">
-                  <Crown className="h-5 w-5" />
-                  <span>{rol?.nombre || "Super Admin"}</span>
+        {/* Modal */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 flex items-center justify-center z-50 p-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Header especial para Super Admin */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-amber-50 to-orange-50">
+              <div className="flex items-center space-x-4">
+                <div className="bg-amber-100 p-3 rounded-lg">
+                  <Crown className="h-8 w-8 text-amber-600" />
                 </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
-                <label className="block text-sm font-medium text-green-700 mb-2">Estado</label>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span className="text-green-600 font-medium">Máximo Privilegio</span>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
-                <label className="block text-sm font-medium text-blue-700 mb-2">Cobertura de Permisos</label>
-                <div className="text-xl font-semibold text-blue-900">
-                  {totalPermisosActivos}/{totalPermisosPosibles}
-                </div>
-                <div className="text-sm text-blue-600">
-                  {modulosConPermisos}/{totalModulos} módulos activos
-                </div>
-              </div>
-            </div>
-
-            {/* Banner de privilegios completos */}
-            <div className="bg-gradient-to-r from-amber-100 to-orange-100 border-l-4 border-amber-500 p-4 mb-8 rounded-r-lg">
-              <div className="flex items-center">
-                <Crown className="h-6 w-6 text-amber-600 mr-3" />
                 <div>
-                  <p className="font-bold text-amber-800">Privilegios de Super Administrador</p>
-                  <p className="text-sm text-amber-700">
-                    Este rol tiene acceso completo y sin restricciones a todos los módulos, funciones y configuraciones del sistema.
-                  </p>
+                  <h2 className="text-2xl font-bold text-slate-800 flex items-center space-x-2">
+                    <span>Super Administrador</span>
+                    <Crown className="h-6 w-6 text-amber-600" />
+                  </h2>
+                  <p className="text-slate-600 mt-1">Acceso completo a todos los módulos y permisos del sistema</p>
+                  <div className="flex gap-4 mt-3 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
+                      <span>{totalModulos} módulos disponibles</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span>Acceso completo</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Resumen de permisos */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-amber-600" />
-                <span>Resumen de Permisos Completos</span>
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.entries(permissionConfig).map(([key, config]) => {
-                  const Icon = config.icon;
-                  const count = modulesData.length; // Super admin tiene todos los permisos
-                  
-                  return (
-                    <div key={key} className={`${config.bg} border-2 border-green-300 rounded-lg p-4 text-center shadow-sm`}>
-                      <Icon className={`h-6 w-6 ${config.color} mx-auto mb-2`} />
-                      <div className="text-2xl font-bold text-gray-900">{count}</div>
-                      <div className="text-sm text-gray-600">{config.label}</div>
-                      <div className="text-xs text-green-600 font-medium mt-1">✓ Completo</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Módulos y permisos detallados */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                <Building2 className="h-5 w-5 text-amber-600" />
-                <span>Todos los Módulos del Sistema</span>
-              </h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {modulesData.map((modulo) => {
-                  const Icon = modulo.icon;
-                  
-                  return (
-                    <div
-                      key={modulo.key}
-                      className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-6 shadow-md"
-                    >
-                      {/* Header del módulo */}
-                      <div className="flex items-start space-x-4 mb-4">
-                        <div className="p-3 rounded-lg bg-green-100">
-                          <Icon className="h-6 w-6 text-green-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-lg font-semibold text-gray-900">{modulo.name}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{modulo.description}</p>
-                        </div>
-                        <div className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          ✓ COMPLETO
-                        </div>
-                      </div>
-
-                      {/* Permisos del módulo */}
-                      <div className="grid grid-cols-2 gap-3">
-                        {modulo.permisos.map((permiso) => {
-                          const permisoKey = permiso.toLowerCase();
-                          const config = permissionConfig[permisoKey];
-                          const PermisoIcon = config?.icon || Eye;
-                          
-                          return (
-                            <div
-                              key={permiso}
-                              className="flex items-center space-x-3 p-3 rounded-lg border bg-white border-green-200 shadow-sm"
-                            >
-                              <div className={`p-2 rounded-md ${config?.bg || 'bg-gray-50'}`}>
-                                <PermisoIcon className={`h-4 w-4 ${config?.color || 'text-gray-600'}`} />
-                              </div>
-                              <div className="flex-1">
-                                <span className="text-sm font-medium text-gray-900">
-                                  {permiso}
-                                </span>
-                              </div>
-                              <div>
-                                <CheckCircle className="h-5 w-5 text-green-600" />
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="bg-gradient-to-r from-amber-50 to-orange-50 px-6 py-4 border-t border-amber-200">
-            <div className="flex justify-end">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={onClose}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-md"
+                className="p-2 hover:bg-white/50 rounded-lg transition-colors"
               >
-                Cerrar
-              </button>
+                <X className="w-5 h-5 text-slate-500" />
+              </motion.button>
             </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
-  // Vista mejorada para roles normales - SOLO MÓDULOS CON PERMISOS
-  const modulosConPermisos = getModulosConPermisos();
-  const totalPermisosActivos = modulosConPermisos.reduce((total, modulo) => 
-    total + modulo.permisosActivos.length, 0
-  );
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden">
-        {/* Header del rol */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors"
-            aria-label="Cerrar"
-          >
-            <X className="h-6 w-6" />
-          </button>
-          
-          <div className="flex items-center space-x-4">
-            <div className="bg-white/20 p-3 rounded-lg">
-              <Shield className="h-8 w-8" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold">Detalles del Rol</h2>
-              <p className="text-blue-100">Permisos y módulos asignados</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-          {/* Información del rol */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-              <label className="block text-sm font-medium text-blue-700 mb-2">Nombre del Rol</label>
-              <div className="text-xl font-semibold text-blue-900 flex items-center space-x-2">
-                <Shield className="h-5 w-5" />
-                <span>{rol?.nombre || "Sin nombre"}</span>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
-              <label className="block text-sm font-medium text-green-700 mb-2">Estado</label>
-              <div className="flex items-center space-x-2">
-                {rol?.estado ? (
-                  <>
+            <div className="flex-1 p-6 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100 min-h-0">
+              {/* Información del rol */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border border-slate-200">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Nombre del Rol</label>
+                  <div className="text-xl font-semibold text-slate-900 flex items-center space-x-2">
+                    <Crown className="h-5 w-5 text-amber-600" />
+                    <span>{rol?.nombre || "Super Admin"}</span>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                  <label className="block text-sm font-medium text-green-700 mb-2">Estado</label>
+                  <div className="flex items-center space-x-2">
                     <CheckCircle className="h-5 w-5 text-green-600" />
                     <span className="text-green-600 font-medium">Activo</span>
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="h-5 w-5 text-red-600" />
-                    <span className="text-red-600 font-medium">Inactivo</span>
-                  </>
-                )}
-              </div>
-            </div>
+                  </div>
+                </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200">
-              <label className="block text-sm font-medium text-purple-700 mb-2">Permisos Totales</label>
-              <div className="text-xl font-semibold text-purple-900">
-                {totalPermisosActivos}
-              </div>
-              <div className="text-sm text-purple-600">
-                {modulosConPermisos.length} módulos activos
-              </div>
-            </div>
-          </div>
-
-          {/* Mensaje si no hay permisos */}
-          {modulosConPermisos.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-10 w-10 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Sin Permisos Asignados</h3>
-              <p className="text-gray-500">Este rol no tiene permisos asignados a ningún módulo.</p>
-            </div>
-          ) : (
-            <>
-              {/* Resumen de permisos por tipo */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                  <BarChart3 className="h-5 w-5 text-blue-600" />
-                  <span>Resumen de Permisos</span>
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {Object.entries(permissionConfig).map(([key, config]) => {
-                    const Icon = config.icon;
-                    const count = modulosConPermisos.filter(modulo => 
-                      modulo.permisosActivos.includes(key)
-                    ).length;
-                    
-                    return (
-                      <div key={key} className={`${config.bg} border rounded-lg p-4 text-center shadow-sm`}>
-                        <Icon className={`h-6 w-6 ${config.color} mx-auto mb-2`} />
-                        <div className="text-2xl font-bold text-gray-900">{count}</div>
-                        <div className="text-sm text-gray-600">{config.label}</div>
-                        <div className="text-xs text-gray-500 mt-1">módulos</div>
-                      </div>
-                    );
-                  })}
+                <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border border-slate-200">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Nivel de Acceso</label>
+                  <div className="text-xl font-semibold text-slate-900">
+                    Completo
+                  </div>
+                  <div className="text-sm text-slate-600">
+                    Sin restricciones
+                  </div>
                 </div>
               </div>
 
-              {/* Módulos con permisos */}
+              {/* Descripción especial para Super Admin */}
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 mb-8">
+                <div className="flex items-start space-x-4">
+                  <div className="bg-amber-100 p-3 rounded-lg">
+                    <Shield className="h-6 w-6 text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">Privilegios de Super Administrador</h3>
+                    <p className="text-slate-700 leading-relaxed">
+                      Este rol tiene acceso completo y sin restricciones a todos los módulos, funciones y configuraciones del sistema.
+                      Puede realizar cualquier acción, incluyendo la gestión de otros usuarios y roles.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Módulos disponibles para Super Admin */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                  <Building2 className="h-5 w-5 text-blue-600" />
-                  <span>Módulos con Permisos Asignados</span>
+                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+                  <Building2 className="h-5 w-5 text-slate-600" />
+                  <span>Módulos del Sistema</span>
                 </h3>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {modulosConPermisos.map((modulo) => {
+                  {modulesData.map((modulo) => {
                     const Icon = modulo.icon;
                     
                     return (
                       <div
                         key={modulo.key}
-                        className={`${modulo.color} border-2 rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow`}
+                        className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow"
                       >
                         {/* Header del módulo */}
                         <div className="flex items-start space-x-4 mb-4">
-                          <div className="p-3 rounded-lg bg-white/80">
-                            <Icon className="h-6 w-6 text-gray-700" />
+                          <div className="p-3 rounded-lg bg-white">
+                            <Icon className="h-6 w-6 text-slate-600" />
                           </div>
                           <div className="flex-1">
-                            <h4 className="text-lg font-semibold text-gray-900">{modulo.name}</h4>
-                            <p className="text-sm text-gray-600 mt-1">{modulo.description}</p>
+                            <h4 className="text-lg font-semibold text-slate-900">{modulo.name}</h4>
+                            <p className="text-sm text-slate-600 mt-1">{modulo.description}</p>
                           </div>
-                          <div className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {modulo.permisosActivos.length} permisos
+                          <div className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Acceso completo
                           </div>
                         </div>
 
-                        {/* Permisos activos del módulo */}
+                        {/* Todos los permisos para Super Admin */}
                         <div className="grid grid-cols-2 gap-3">
-                          {modulo.permisosActivos.map((permiso) => {
-                            const config = permissionConfig[permiso];
+                          {modulo.permisos.map((permiso) => {
+                            const config = permissionConfig[permiso.toLowerCase()];
                             const PermisoIcon = config?.icon || Eye;
                             
                             return (
                               <div
                                 key={permiso}
-                                className="flex items-center space-x-3 p-3 rounded-lg border bg-white/90 shadow-sm"
+                                className="flex items-center space-x-3 p-3 rounded-lg border bg-white shadow-sm"
                               >
-                                <div className={`p-2 rounded-md ${config?.bg || 'bg-gray-50'}`}>
-                                  <PermisoIcon className={`h-4 w-4 ${config?.color || 'text-gray-600'}`} />
+                                <div className={`p-2 rounded-md ${config?.bg || 'bg-slate-50'}`}>
+                                  <PermisoIcon className={`h-4 w-4 ${config?.color || 'text-slate-600'}`} />
                                 </div>
                                 <div className="flex-1">
-                                  <span className="text-sm font-medium text-gray-900 capitalize">
+                                  <span className="text-sm font-medium text-slate-900">
                                     {permiso}
                                   </span>
                                 </div>
@@ -503,22 +329,232 @@ export default function VerRolModal({ isOpen, onClose, rol }) {
                   })}
                 </div>
               </div>
-            </>
-          )}
-        </div>
+            </div>
 
-        {/* Footer */}
-        <div className="bg-gray-50 px-6 py-4 border-t">
-          <div className="flex justify-end">
-            <button
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-slate-200 bg-slate-50 flex-shrink-0">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onClose}
+                className="px-6 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors"
+              >
+                Cerrar
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>,
+      document.body
+    );
+  }
+
+  // Vista mejorada para roles normales - SOLO MÓDULOS CON PERMISOS
+  const modulosConPermisos = getModulosConPermisos();
+  const totalPermisosActivos = modulosConPermisos.reduce((total, modulo) => 
+    total + modulo.permisosActivos.length, 0
+  );
+
+  return ReactDOM.createPortal(
+    <AnimatePresence>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ duration: 0.3 }}
+        className="fixed inset-0 flex items-center justify-center z-50 p-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+          {/* Header del rol */}
+          <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-800">Detalles del Rol</h2>
+              <p className="text-slate-600 mt-1">Permisos y módulos asignados a "{rol?.nombre}"</p>
+              <div className="flex gap-4 mt-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span>{modulosConPermisos.length} módulos activos</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span>{totalPermisosActivos} permisos asignados</span>
+                </div>
+              </div>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               onClick={onClose}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors shadow-md"
+              className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5 text-slate-500" />
+            </motion.button>
+          </div>
+
+          <div className="flex-1 p-6 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100 min-h-0">
+            {/* Información del rol */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border border-slate-200">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Nombre del Rol</label>
+                <div className="text-xl font-semibold text-slate-900 flex items-center space-x-2">
+                  <Shield className="h-5 w-5 text-slate-600" />
+                  <span>{rol?.nombre || "Sin nombre"}</span>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                <label className="block text-sm font-medium text-green-700 mb-2">Estado</label>
+                <div className="flex items-center space-x-2">
+                  {rol?.estado ? (
+                    <>
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <span className="text-green-600 font-medium">Activo</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="h-5 w-5 text-red-600" />
+                      <span className="text-red-600 font-medium">Inactivo</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border border-slate-200">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Permisos Totales</label>
+                <div className="text-xl font-semibold text-slate-900">
+                  {totalPermisosActivos}
+                </div>
+                <div className="text-sm text-slate-600">
+                  {modulosConPermisos.length} módulos activos
+                </div>
+              </div>
+            </div>
+
+            {/* Mensaje si no hay permisos */}
+            {modulosConPermisos.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="bg-slate-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-10 w-10 text-slate-400" />
+                </div>
+                <h3 className="text-lg font-medium text-slate-900 mb-2">Sin Permisos Asignados</h3>
+                <p className="text-slate-500">Este rol no tiene permisos asignados a ningún módulo.</p>
+              </div>
+            ) : (
+              <>
+                {/* Resumen de permisos por tipo */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+                    <BarChart3 className="h-5 w-5 text-slate-600" />
+                    <span>Resumen de Permisos</span>
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {Object.entries(permissionConfig).map(([key, config]) => {
+                      const Icon = config.icon;
+                      const count = modulosConPermisos.filter(modulo => 
+                        modulo.permisosActivos.includes(key)
+                      ).length;
+                      
+                      return (
+                        <div key={key} className={`${config.bg} border rounded-lg p-4 text-center shadow-sm`}>
+                          <Icon className={`h-6 w-6 ${config.color} mx-auto mb-2`} />
+                          <div className="text-2xl font-bold text-slate-900">{count}</div>
+                          <div className="text-sm text-slate-600">{config.label}</div>
+                          <div className="text-xs text-slate-500 mt-1">módulos</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Módulos con permisos */}
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+                    <Building2 className="h-5 w-5 text-slate-600" />
+                    <span>Módulos con Permisos Asignados</span>
+                  </h3>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {modulosConPermisos.map((modulo) => {
+                      const Icon = modulo.icon;
+                      
+                      return (
+                        <div
+                          key={modulo.key}
+                          className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow"
+                        >
+                          {/* Header del módulo */}
+                          <div className="flex items-start space-x-4 mb-4">
+                            <div className="p-3 rounded-lg bg-white">
+                              <Icon className="h-6 w-6 text-slate-600" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-lg font-semibold text-slate-900">{modulo.name}</h4>
+                              <p className="text-sm text-slate-600 mt-1">{modulo.description}</p>
+                            </div>
+                            <div className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              {modulo.permisosActivos.length} permisos
+                            </div>
+                          </div>
+
+                          {/* Permisos activos del módulo */}
+                          <div className="grid grid-cols-2 gap-3">
+                            {modulo.permisosActivos.map((permiso) => {
+                              const config = permissionConfig[permiso];
+                              const PermisoIcon = config?.icon || Eye;
+                              
+                              return (
+                                <div
+                                  key={permiso}
+                                  className="flex items-center space-x-3 p-3 rounded-lg border bg-white shadow-sm"
+                                >
+                                  <div className={`p-2 rounded-md ${config?.bg || 'bg-slate-50'}`}>
+                                    <PermisoIcon className={`h-4 w-4 ${config?.color || 'text-slate-600'}`} />
+                                  </div>
+                                  <div className="flex-1">
+                                    <span className="text-sm font-medium text-slate-900 capitalize">
+                                      {permiso}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <CheckCircle className="h-4 w-4 text-green-600" />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-end gap-3 p-6 border-t border-slate-200 bg-slate-50 flex-shrink-0">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={onClose}
+              className="px-6 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors"
             >
               Cerrar
-            </button>
+            </motion.button>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </AnimatePresence>,
+    document.body
   );
 }
