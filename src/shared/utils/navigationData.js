@@ -32,9 +32,14 @@ export const navigationItems = [
       {
         id: 'gestion-inmuebles',
         title: 'Gestión de Inmuebles',
-        path: dashboardRoutes.properties || '/inmuebles/gestion',
+        path: dashboardRoutes.properties
       },
-    ],
+      {
+        id: 'gestion-propietarios',
+        title: 'Gestión de Propietarios',
+        path: dashboardRoutes.owners
+      }
+    ]
   },
   {
     id: 'citas',
