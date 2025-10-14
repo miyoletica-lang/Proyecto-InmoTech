@@ -301,12 +301,12 @@ const AppointmentCalendar = ({
   };
 
   const handleAppointmentClick = (appointment, event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
     setPopoverState({
       isOpen: true,
-      position: null,
+      position: { x: rect.left, y: rect.bottom + 5 },
       appointment,
-      date: null,
-      referenceElement: event.currentTarget,
+      date: null
     });
   };
 
@@ -320,7 +320,7 @@ const AppointmentCalendar = ({
   };
 
   const closePopover = () => {
-    setPopoverState({ isOpen: false, position: null, appointment: null, date: null, referenceElement: null });
+    setPopoverState({ isOpen: false, position: null, appointment: null, date: null });
   };
 
   const closeDayListModal = () => {
@@ -440,7 +440,7 @@ const AppointmentCalendar = ({
       <ActionsPopover
         isOpen={popoverState.isOpen}
         onClose={closePopover}
-        referenceElement={popoverState.referenceElement}
+        position={popoverState.position}
         appointment={popoverState.appointment}
         date={popoverState.date}
         onView={onViewAppointment}

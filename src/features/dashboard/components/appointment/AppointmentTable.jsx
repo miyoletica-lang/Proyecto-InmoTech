@@ -10,7 +10,6 @@ const AppointmentTable = ({
   onEdit,
   onDelete,
   onStatusChange,
-  loadingStatusChanges,
   currentPage,
   totalPages,
   onPageChange
@@ -149,7 +148,6 @@ const AppointmentTable = ({
             <div className="mt-1">
               <StatusSelector
                 value={cita.estado}
-                loading={loadingStatusChanges?.has(cita.id)}
                 onChange={(newStatus) => onStatusChange(cita, newStatus)}
               />
             </div>
@@ -261,7 +259,6 @@ const AppointmentTable = ({
                   <td className="px-4 py-4">
                     <StatusSelector
                       value={cita.estado}
-                      loading={loadingStatusChanges?.has(cita.id)}
                       onChange={(newStatus) => onStatusChange(cita, newStatus)}
                     />
                   </td>

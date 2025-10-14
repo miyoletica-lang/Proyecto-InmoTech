@@ -264,20 +264,8 @@ const CreateAppointmentModal = ({ isOpen, onClose, onSubmit }) => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const validateAllSteps = () => {
-    let allErrors = {};
-    // Validate step 1
-    allErrors = { ...allErrors, ...{ cliente: validateNombre(formData.cliente), telefono: validateTelefono(formData.telefono), email: validateEmail(formData.email), tipoDocumento: validateTipoDocumento(formData.tipoDocumento), numeroDocumento: validateNumeroDocumento(formData.numeroDocumento, formData.tipoDocumento) } };
-    // Validate step 2
-    allErrors = { ...allErrors, ...{ fecha: validateFecha(formData.fecha), hora: validateHora(formData.hora) } };
-    // Validate step 3
-    allErrors = { ...allErrors, ...{ servicio: validateServicio(formData.servicio) } };
-    setErrors(allErrors);
-    return Object.values(allErrors).every(error => !error);
-  };
-
   const handleSubmit = () => {
-    if (validateAllSteps()) {
+    if (validateStep(3)) {
       try {
         onSubmit(formData);
         toast({
@@ -293,12 +281,6 @@ const CreateAppointmentModal = ({ isOpen, onClose, onSubmit }) => {
         });
       }
       handleClose();
-    } else {
-      toast({
-        title: "Campos requeridos",
-        description: "Por favor corrige los errores antes de crear la cita",
-        variant: "destructive"
-      });
     }
   };
 
@@ -308,8 +290,6 @@ const CreateAppointmentModal = ({ isOpen, onClose, onSubmit }) => {
       cliente: '',
       telefono: '',
       email: '',
-      tipoDocumento: '',
-      numeroDocumento: '',
       fecha: '',
       hora: '',
       servicio: '',
