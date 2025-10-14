@@ -23,6 +23,7 @@ export const publicNavigationLinks = [
 export const dashboardRoutes = {
   dashboard: '/dashboard',
   properties: '/inmuebles/gestion',
+  owners: '/inmuebles/propietarios',
   appointments: '/dashboard/citas',
   clients: '/dashboard/citas/clientes',
   sales: '/ventas/gestion',
