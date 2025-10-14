@@ -1,34 +1,27 @@
 // Importa rutas centralizadas desde el archivo index
 import { dashboardRoutes } from '../../routes/index';
 
+// Importa íconos de react-icons
 import {
   MdDashboard,
   MdHome,
   MdCalendarToday,
-  MdPeople,
-  MdEventNote,
   MdTrendingUp,
-  MdShoppingCart,
-  MdAttachMoney,
   MdBusiness,
-  MdPersonAdd,
-  MdAssignment,
   MdBarChart,
   MdSecurity,
-  MdGroup,
-  MdAdminPanelSettings,
   MdLogout,
-  MdChevronRight,
   MdWeb
 } from 'react-icons/md';
 
+// Lista de elementos principales del menú de navegación
 export const navigationItems = [
   {
     id: 'dashboard',
     title: 'Dashboard',
     icon: MdDashboard,
     path: dashboardRoutes.dashboard,
-    isExpandable: false
+    isExpandable: false,
   },
   {
     id: 'inmuebles',
@@ -57,14 +50,14 @@ export const navigationItems = [
       {
         id: 'gestion-clientes',
         title: 'Gestión de Clientes',
-        path: dashboardRoutes.clients
+        path: dashboardRoutes.clients || '/citas/clientes',
       },
       {
         id: 'gestion-citas',
         title: 'Gestión de Citas',
-        path: dashboardRoutes.appointments
-      }
-    ]
+        path: dashboardRoutes.appointments || '/citas/gestion',
+      },
+    ],
   },
   {
     id: 'ventas',
@@ -75,14 +68,14 @@ export const navigationItems = [
       {
         id: 'gestion-comprador',
         title: 'Gestión de Comprador',
-        path: dashboardRoutes.buyers
+        path: dashboardRoutes.buyers || '/dashboard/buyersManagement',
       },
       {
         id: 'gestion-ventas',
         title: 'Gestión de Ventas',
-        path: dashboardRoutes.sales
-      }
-    ]
+        path: dashboardRoutes.sales || '/dashboard/salesManagement',
+      },
+    ],
   },
   {
     id: 'arriendos',
@@ -93,14 +86,14 @@ export const navigationItems = [
       {
         id: 'gestion-arrendatario',
         title: 'Gestión de Arrendatario',
-        path: dashboardRoutes.tenants
+        path: dashboardRoutes.tenants || '/dashboard/leasesManagement',
       },
       {
         id: 'gestion-arriendos',
         title: 'Gestión de Arriendos',
-        path: dashboardRoutes.rentals
-      }
-    ]
+        path: dashboardRoutes.rentals || '/dashboard/renantManagement',
+      },
+    ],
   },
   {
     id: 'reportes',
@@ -111,9 +104,9 @@ export const navigationItems = [
       {
         id: 'gestion-reportes',
         title: 'Gestión de Reportes',
-        path: dashboardRoutes.reports
-      }
-    ]
+        path: dashboardRoutes.reports || '/reportes/gestion',
+      },
+    ],
   },
   {
     id: 'seguridad',
@@ -124,29 +117,31 @@ export const navigationItems = [
       {
         id: 'usuarios',
         title: 'Usuarios',
-        path: dashboardRoutes.users
+        path: dashboardRoutes.users || '/seguridad/usuarios',
       },
       {
         id: 'roles',
         title: 'Roles',
-        path: dashboardRoutes.roles
-      }
-    ]
-  }
+        path: dashboardRoutes.roles || '/seguridad/roles',
+      },
+    ],
+  },
 ];
 
+// Elemento para cerrar sesión
 export const logoutItem = {
   id: 'logout',
   title: 'Cerrar Sesión',
   icon: MdLogout,
   action: 'logout',
-  isExpandable: false
+  isExpandable: false,
 };
 
+// Elemento para ir al sitio público
 export const goToSiteItem = {
   id: 'go-to-site',
   title: 'Ir al Sitio',
   icon: MdWeb,
   action: 'go-to-site',
-  isExpandable: false
+  isExpandable: false,
 };
