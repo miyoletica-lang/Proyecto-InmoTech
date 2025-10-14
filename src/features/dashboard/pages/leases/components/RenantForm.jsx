@@ -1,4 +1,5 @@
 import React, { useRef, useState, useCallback } from "react";
+import { FaTimes } from "react-icons/fa";
 
 // Lista de campos que deben ser obligatorios según la solicitud del usuario (INCLUYE INQUILINO, CODEUDOR, INMUEBLE Y CONTRATO)
 const requiredFields = [
@@ -94,8 +95,8 @@ export default function RenantForm({ onClose, onSubmit }) {
 
     // Función para obtener la clase de estilo (incluyendo el resaltado de error)
     const getFieldClass = useCallback((fieldName) => {
-        const errorClass = errors[fieldName] ? 'border-red-500 ring-2 ring-red-500' : 'border-gray-300 focus:ring-purple-500 focus:border-purple-500';
-        return `w-full p-2 border rounded-md focus:outline-none transition duration-150 ${errorClass}`;
+        const errorClass = errors[fieldName] ? 'border-red-500 ring-2 ring-red-500' : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+        return `w-full p-3 border rounded-lg focus:outline-none transition duration-150 ${errorClass}`;
     }, [errors]);
 
     // Lista de campos que deben contener solo letras (y acentos/espacios)
@@ -354,7 +355,6 @@ export default function RenantForm({ onClose, onSubmit }) {
             }
         }
 
-
         // Re-evaluar firstErrorField en caso de que se haya limpiado o establecido un error cruzado
         if (!firstErrorField) {
             for (const fieldName of fieldsToCheck) {
@@ -466,7 +466,7 @@ export default function RenantForm({ onClose, onSubmit }) {
 
         if (type === "checkbox") {
             return (
-                <label htmlFor={name} className="col-span-3 flex items-center gap-2 text-sm font-medium text-gray-700 mt-2">
+                <label htmlFor={name} className="col-span-3 flex items-center gap-2 text-sm font-semibold text-gray-700 mt-2">
                     <input
                         id={name}
                         name={name}
@@ -474,7 +474,7 @@ export default function RenantForm({ onClose, onSubmit }) {
                         type="checkbox"
                         defaultChecked={!!initial[name]}
                         onChange={handleInputChange}
-                        className="rounded text-purple-600 focus:ring-purple-500"
+                        className="rounded text-blue-600 focus:ring-blue-500"
                     />
                     <span>{label} {isRequired && <span className="text-red-500 ml-1">*</span>}</span>
                 </label>
@@ -482,7 +482,7 @@ export default function RenantForm({ onClose, onSubmit }) {
         }
 
         const LabelContent = (
-            <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={name} className="block text-sm font-semibold text-gray-700 mb-2">
                 {label}
                 {isRequired && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -496,7 +496,7 @@ export default function RenantForm({ onClose, onSubmit }) {
                         id={name}
                         name={name}
                         ref={setElRef(name)}
-                        className={getFieldClass(name)} // Usar getFieldClass para aplicar el estilo de error
+                        className={getFieldClass(name)}
                         defaultValue={initial[name] ?? ""}
                         onChange={handleInputChange}
                         onBlur={onBlurHandler}
@@ -522,13 +522,12 @@ export default function RenantForm({ onClose, onSubmit }) {
                     id={name}
                     name={name}
                     ref={setElRef(name)}
-                    className={getFieldClass(name)} // Usar getFieldClass para aplicar el estilo de error
+                    className={getFieldClass(name)}
                     type={inputType}
                     placeholder={placeholder}
-                    // FIX: Agrupamos con paréntesis la expresión '||' para resolver el error de precedencia al mezclar con '??'
                     defaultValue={(displayValuesRef.current[name] || initial[name]) ?? ""} 
                     onChange={handleInputChange}
-                    onBlur={onBlurHandler} // Verificar obligatoriedad/formato al perder el foco
+                    onBlur={onBlurHandler}
                 />
                 {errorMessage && (
                     <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
@@ -538,140 +537,172 @@ export default function RenantForm({ onClose, onSubmit }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-60 flex justify-center items-center z-50 overflow-y-auto">
-            <div className="bg-white w-full max-w-4xl rounded-lg shadow-lg p-4 relative my-8">
-                {/* Botón de cierre: reemplazado con SVG en línea */}
-                <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 p-1 rounded-full hover:bg-gray-100 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+        // 🔑 Fondo del modal con desenfoque - CAMBIO PRINCIPAL
+        <div 
+            className="fixed inset-0 flex items-center justify-center bg-gray-900/70 backdrop-blur-sm z-50 p-4"
+            onClick={onClose}
+        >
+            {/* Contenido principal del modal */}
+            <div 
+                className="bg-white rounded-xl shadow-2xl w-full max-w-4xl p-6 relative max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+            >
+                
+                {/* Header con estilo del banner */}
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Crear Arriendo</h2>
+                    <p className="text-gray-600 text-sm">Complete la información del nuevo contrato de arrendamiento</p>
+                </div>
+
+                {/* Botón cerrar con estilo azul */}
+                <button
+                    onClick={onClose}
+                    className="absolute top-6 right-6 text-gray-500 hover:text-blue-600 transition duration-150 p-1 rounded-full"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
                 </button>
 
-                <h2 className="text-2xl font-bold mb-3">Crear Arriendo</h2>
-
                 {/* Barra de progreso */}
-                <div className="mb-4">
+                <div className="mb-6">
                     <div className="w-full bg-gray-200 h-2 rounded-full">
                         <div
-                            className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${(step / totalSteps) * 100}%` }}
                         />
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-gray-600 mt-2">
                         Paso {step} de {totalSteps}:{" "}
                         {step === 1 ? "Datos del Inquilino" : step === 2 ? "Datos del Codeudor" : step === 3 ? "Datos del Inmueble" : "Datos del Contrato y Pago"}
                         {" "} (Campos obligatorios marcados con *)
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* PASO 1 */}
-                    {step === 1 && (
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">Datos del Inquilino</h3>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                                <Field
-                                    name="tipoDocInquilino"
-                                    as="select"
-                                    options={[
-                                        { value: "CC", label: "Cédula de Ciudadanía (CC)" },
-                                        { value: "CE", label: "Cédula de Extranjería (CE)" },
-                                        { value: "NIT", label: "NIT" },
-                                    ]}
-                                />
-                                <Field name={NUMERO_DOC_INQ} placeholder="Mínimo 8 dígitos. Solo números." />
-                                <Field name="primerNombreInquilino" placeholder="Solo letras y espacios." />
-                                <Field name="segundoNombreInquilino" placeholder="Solo letras y espacios. (Opcional)" />
-                                <Field name="primerApellidoInquilino" placeholder="Solo letras y espacios." />
-                                <Field name="segundoApellidoInquilino" placeholder="Solo letras y espacios. (Opcional)" />
-                                <Field name="correoInquilino" placeholder="Debe contener un @" type="email" />
-                                <Field name="telefonoInquilino" placeholder="Solo números. Ej: 3001234567" />
+                <form onSubmit={handleSubmit}>
+                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 space-y-6">
+                        
+                        {/* PASO 1 */}
+                        {step === 1 && (
+                            <div>
+                                <h3 className="text-lg font-bold text-blue-800 mb-4 pb-2 border-b border-blue-200">
+                                    Datos del Inquilino
+                                </h3>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                                    <Field
+                                        name="tipoDocInquilino"
+                                        as="select"
+                                        options={[
+                                            { value: "CC", label: "Cédula de Ciudadanía (CC)" },
+                                            { value: "CE", label: "Cédula de Extranjería (CE)" },
+                                            { value: "NIT", label: "NIT" },
+                                        ]}
+                                    />
+                                    <Field name={NUMERO_DOC_INQ} placeholder="Mínimo 8 dígitos. Solo números." />
+                                    <Field name="primerNombreInquilino" placeholder="Solo letras y espacios." />
+                                    <Field name="segundoNombreInquilino" placeholder="Solo letras y espacios. (Opcional)" />
+                                    <Field name="primerApellidoInquilino" placeholder="Solo letras y espacios." />
+                                    <Field name="segundoApellidoInquilino" placeholder="Solo letras y espacios. (Opcional)" />
+                                    <Field name="correoInquilino" placeholder="Debe contener un @" type="email" />
+                                    <Field name="telefonoInquilino" placeholder="Solo números. Ej: 3001234567" />
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* PASO 2 */}
-                    {step === 2 && (
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">Datos del Codeudor</h3>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                                <Field
-                                    name="tipoDocCodeudor"
-                                    as="select"
-                                    options={[
-                                        { value: "CC", label: "Cédula de Ciudadanía (CC)" },
-                                        { value: "CE", label: "Cédula de Extranjería (CE)" },
-                                        { value: "NIT", label: "NIT" },
-                                    ]}
-                                />
-                                <Field name={NUMERO_DOC_COD} placeholder="Mínimo 8 dígitos. Solo números." />
-                                <Field name="primerNombreCodeudor" placeholder="Solo letras y espacios." />
-                                <Field name="segundoNombreCodeudor" placeholder="Solo letras y espacios. (Opcional)" />
-                                <Field name="primerApellidoCodeudor" placeholder="Solo letras y espacios." />
-                                <Field name="segundoApellidoCodeudor" placeholder="Solo letras y espacios. (Opcional)" />
-                                <Field name="correoCodeudor" placeholder="Debe contener un @" type="email" />
-                                <Field name="telefonoCodeudor" placeholder="Solo números. Ej: 3009876543" />
-                                <Field name="estabilidadLaboral" placeholder="Ej: 5 años" />
+                        {/* PASO 2 */}
+                        {step === 2 && (
+                            <div>
+                                <h3 className="text-lg font-bold text-green-800 mb-4 pb-2 border-b border-green-200">
+                                    Datos del Codeudor
+                                </h3>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                                    <Field
+                                        name="tipoDocCodeudor"
+                                        as="select"
+                                        options={[
+                                            { value: "CC", label: "Cédula de Ciudadanía (CC)" },
+                                            { value: "CE", label: "Cédula de Extranjería (CE)" },
+                                            { value: "NIT", label: "NIT" },
+                                        ]}
+                                    />
+                                    <Field name={NUMERO_DOC_COD} placeholder="Mínimo 8 dígitos. Solo números." />
+                                    <Field name="primerNombreCodeudor" placeholder="Solo letras y espacios." />
+                                    <Field name="segundoNombreCodeudor" placeholder="Solo letras y espacios. (Opcional)" />
+                                    <Field name="primerApellidoCodeudor" placeholder="Solo letras y espacios." />
+                                    <Field name="segundoApellidoCodeudor" placeholder="Solo letras y espacios. (Opcional)" />
+                                    <Field name="correoCodeudor" placeholder="Debe contener un @" type="email" />
+                                    <Field name="telefonoCodeudor" placeholder="Solo números. Ej: 3009876543" />
+                                    <Field name="estabilidadLaboral" placeholder="Ej: 5 años" />
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* PASO 3 */}
-                    {step === 3 && (
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">Datos del Inmueble</h3>
-                            <div className="grid grid-cols-3 gap-x-4 gap-y-3">
-                                <Field
-                                    name="tipoInmueble"
-                                    as="select"
-                                    options={[
-                                        { value: "Casa", label: "Casa" },
-                                        { value: "Apartamento", label: "Apartamento" },
-                                        { value: "Apartaestudio", label: "Apartaestudio" },
-                                    ]}
-                                />
-                                <Field name="registroInmobiliario" placeholder="Ej: 12345-ABC" />
-                                <Field name="nombreInmueble" placeholder="Ej: Edificio Central" />
-                                <Field name="area" placeholder="Ej: 75. Solo números enteros mayores a 0." />
-                                <Field name="habitaciones" placeholder="Ej: 3. Solo números enteros mayores a 0." />
-                                <Field name="banos" placeholder="Ej: 2. Solo números enteros mayores a 0." />
-                                <Field name="departamento" placeholder="Ej: Antioquia" />
-                                <Field name="ciudad" placeholder="Ej: Medellín" />
-                                <Field name="barrio" placeholder="Ej: El Poblado" />
-                                <Field name="estrato" placeholder="Ej: 4. Solo números enteros mayores a 0." />
-                                <Field name="direccion" placeholder="Ej: Calle 10 # 45-20" />
-                                <Field name="precioInmueble" placeholder="Ej: 1.500.000 (Solo números enteros mayores a 0)." />
-                                <Field name="garaje" type="checkbox" />
+                        {/* PASO 3 */}
+                        {step === 3 && (
+                            <div>
+                                <h3 className="text-lg font-bold text-yellow-800 mb-4 pb-2 border-b border-yellow-200">
+                                    Datos del Inmueble
+                                </h3>
+                                <div className="grid grid-cols-3 gap-x-4 gap-y-3">
+                                    <Field
+                                        name="tipoInmueble"
+                                        as="select"
+                                        options={[
+                                            { value: "Casa", label: "Casa" },
+                                            { value: "Apartamento", label: "Apartamento" },
+                                            { value: "Apartaestudio", label: "Apartaestudio" },
+                                        ]}
+                                    />
+                                    <Field name="registroInmobiliario" placeholder="Ej: 12345-ABC" />
+                                    <Field name="nombreInmueble" placeholder="Ej: Edificio Central" />
+                                    <Field name="area" placeholder="Ej: 75. Solo números enteros mayores a 0." />
+                                    <Field name="habitaciones" placeholder="Ej: 3. Solo números enteros mayores a 0." />
+                                    <Field name="banos" placeholder="Ej: 2. Solo números enteros mayores a 0." />
+                                    <Field name="departamento" placeholder="Ej: Antioquia" />
+                                    <Field name="ciudad" placeholder="Ej: Medellín" />
+                                    <Field name="barrio" placeholder="Ej: El Poblado" />
+                                    <Field name="estrato" placeholder="Ej: 4. Solo números enteros mayores a 0." />
+                                    <Field name="direccion" placeholder="Ej: Calle 10 # 45-20" />
+                                    <Field name="precioInmueble" placeholder="Ej: 1.500.000 (Solo números enteros mayores a 0)." />
+                                    <Field name="garaje" type="checkbox" />
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* PASO 4 */}
-                    {step === 4 && (
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">Datos del Contrato y Pago</h3>
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                                <Field name="fechaInicio" type="date" />
-                                <Field name="fechaFinal" type="date" />
-                                <Field name="fechaCobro" type="date" />
-                                <Field name="precio" placeholder="Ej: 1.500.000 (Solo números enteros mayores a 0)." />
-                                <Field
-                                    name="estado"
-                                    as="select"
-                                    options={[
-                                        { value: "Activo", label: "Activo" },
-                                        { value: "Pendiente", label: "Pendiente de inicio" },
-                                        { value: "Finalizado", label: "Finalizado" },
-                                    ]}
-                                />
+                        {/* PASO 4 */}
+                        {step === 4 && (
+                            <div>
+                                <h3 className="text-lg font-bold text-purple-800 mb-4 pb-2 border-b border-purple-200">
+                                    Datos del Contrato y Pago
+                                </h3>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                                    <Field name="fechaInicio" type="date" />
+                                    <Field name="fechaFinal" type="date" />
+                                    <Field name="fechaCobro" type="date" />
+                                    <Field name="precio" placeholder="Ej: 1.500.000 (Solo números enteros mayores a 0)." />
+                                    <Field
+                                        name="estado"
+                                        as="select"
+                                        options={[
+                                            { value: "Activo", label: "Activo" },
+                                            { value: "Pendiente", label: "Pendiente de inicio" },
+                                            { value: "Finalizado", label: "Finalizado" },
+                                        ]}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* Controles */}
-                    <div className="flex justify-between pt-6 border-t border-gray-200 mt-6">
+                    </div>
+
+                    {/* Controles de navegación */}
+                    <div className="flex justify-between pt-6 mt-6">
                         {step > 1 && (
-                            <button type="button" onClick={prevStep} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">
+                            <button 
+                                type="button" 
+                                onClick={prevStep} 
+                                className="px-6 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition duration-150 transform hover:scale-[1.02]"
+                            >
                                 Anterior
                             </button>
                         )}
@@ -679,22 +710,24 @@ export default function RenantForm({ onClose, onSubmit }) {
                         {step < totalSteps && (
                             <button
                                 type="button"
-                                onClick={handleNextStep} // Usamos handleNextStep para validar antes de avanzar
-                                className={`px-4 py-2 text-white rounded-md transition ${step > 1 ? "ml-auto" : "w-full"} bg-purple-600 hover:bg-purple-700`}
+                                onClick={handleNextStep}
+                                className={`px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-lg shadow-blue-400/50 hover:bg-blue-700 transition duration-150 transform hover:scale-[1.02] ${step > 1 ? "ml-auto" : "w-full"}`}
                             >
                                 Siguiente
                             </button>
                         )}
 
                         {step === totalSteps && (
-                            <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition ml-auto">
-                                Enviar Formulario
+                            <button 
+                                type="submit" 
+                                className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-lg shadow-green-400/50 hover:bg-green-700 transition duration-150 transform hover:scale-[1.02] ml-auto"
+                            >
+                                Crear Arriendo
                             </button>
                         )}
                     </div>
                 </form>
             </div>
-            {/* Se elimina el componente de notificación flotante */}
         </div>
     );
 }

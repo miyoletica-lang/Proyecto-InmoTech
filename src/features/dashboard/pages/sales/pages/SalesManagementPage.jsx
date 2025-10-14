@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import ReactDOM from 'react-dom';
 import { FaUsers, FaPlus, FaEye, FaChartBar, FaSearch } from "react-icons/fa";
-import DashboardLayout from "../../../../../shared/components/dashboard/Layout/DashboardLayout";
 import "../../../../../shared/styles/globals.css";
 // Importaciones de modales (asumo que contienen la estructura de modal fija y z-50)
 import SaleForm from "../components/SaleForm";
@@ -115,84 +115,165 @@ export function SalesManagementPage() {
       v.tipo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // 🔑 --- FUNCIONES PARA RENDERIZAR MODALES CON PORTAL ---
+  const renderFormModal = () => {
+    if (!showForm) return null;
+
+    const modalContent = (
+      <SaleForm onSubmit={handleSaveSale} onClose={handleCloseForm} />
+    );
+
+    return ReactDOM.createPortal(
+      modalContent,
+      document.getElementById('modal-root') || document.body
+    );
+  };
+
+  const renderViewModal = () => {
+    if (!viewingSale) return null;
+
+    const modalContent = (
+      <ViewSaleModal
+        sale={viewingSale}
+        onClose={() => setViewingSale(null)}
+      />
+    );
+
+    return ReactDOM.createPortal(
+      modalContent,
+      document.getElementById('modal-root') || document.body
+    );
+  };
+
+  const renderInterestedPeopleModal = () => {
+    if (!showInterestedPeople) return null;
+
+    const modalContent = (
+      <InterestedPeopleTable
+        onClose={() => setShowInterestedPeople(false)}
+      />
+    );
+
+    return ReactDOM.createPortal(
+      modalContent,
+      document.getElementById('modal-root') || document.body
+    );
+  };
+
+  const renderTrackingModal = () => {
+    if (!trackingSale) return null;
+
+    const modalContent = (
+      <PurchaseTrackingModal
+        venta={trackingSale}
+        onClose={() => setTrackingSale(null)}
+        onUpdate={handleUpdateTracking}
+      />
+    );
+
+    return ReactDOM.createPortal(
+      modalContent,
+      document.getElementById('modal-root') || document.body
+    );
+  };
+
   return (
     <>
-      <DashboardLayout>
-        <div className="p-6">
-          <header className="flex justify-between items-center mb-6 flex-wrap gap-3">
-            <h1 className="text-2xl font-bold">Gestión de ventas</h1>
-            <div className="flex gap-3">
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition duration-200"
-                onClick={() => setShowInterestedPeople(true)}
-              >
-                <FaUsers /> Personas interesadas
-              </button>
-              <button
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition duration-200"
-                onClick={() => setShowForm(true)}
-              >
-                <FaPlus /> Crear venta
-              </button>
-            </div>
-          </header>
+      <div className="p-6">
+        {/* HEADER CON ESTILO DEL BANNER */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Gestión de ventas
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Administra todas las transacciones de venta de tus propiedades
+          </p>
+        </div>
 
-          {/* 🔎 Input buscador */}
-          <div className="relative w-full max-w-lg mb-6">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar por registro, comprador o tipo..."
-              className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-150"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        {/* CONTENEDOR SUPERIOR CON BOTONES Y BÚSQUEDA */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex-1 max-w-md">
+            {/* BARRA DE BÚSQUEDA */}
+            <div className="relative w-full">
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar por registro, comprador o tipo..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition duration-150 shadow-sm"
+              />
+            </div>
           </div>
+          
+          {/* BOTONES CON COLOR AZUL COMO EL BANNER */}
+          <div className="flex gap-3">
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg transition duration-200 font-semibold"
+              onClick={() => setShowInterestedPeople(true)}
+            >
+              <FaUsers /> Personas interesadas
+            </button>
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg transition duration-200 font-semibold"
+              onClick={() => setShowForm(true)}
+            >
+              <FaPlus /> Crear venta
+            </button>
+          </div>
+        </div>
 
-          {/* Tabla */}
-          <div className="shadow-md rounded-lg overflow-x-auto">
-            <div className="bg-blue-700 text-white font-semibold rounded-t-lg px-4 py-2 flex items-center gap-2">
-              <span className="mr-2">🏠</span> Lista de ventas ({filteredVentas.length} resultados)
-            </div>
-            <table className="w-full min-w-[700px] border-collapse bg-white">
+        {/* TABLA CON ESTILO ACTUALIZADO */}
+        <div className="rent-table-wrapper rounded-xl shadow-lg">
+          {/* CABECERA DE TABLA CON COLOR AZUL */}
+          <div className="rent-table-header rounded-t-xl bg-blue-700">
+            🏠 Lista de ventas ({filteredVentas.length}{" "}
+            {filteredVentas.length === 1 ? "resultado" : "resultados"})
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="rent-table w-full border-collapse bg-white rounded-b-lg overflow-hidden">
               <thead className="bg-green-50">
                 <tr>
-                  <th className="px-4 py-3 text-center w-12">ID</th>
-                  <th className="px-4 py-3 text-center w-24">Registro</th>
-                  <th className="px-4 py-3 text-center w-20">Tipo</th>
-                  <th className="px-4 py-3 text-center w-40">Comprador</th>
-                  <th className="px-4 py-3 text-center w-24">Fecha</th>
-                  <th className="px-4 py-3 text-center w-24">Valor</th>
-                  <th className="px-4 py-3 text-center w-24">Estado</th>
-                  <th className="px-4 py-3 text-center w-24">Acciones</th>
+                  <th className="px-3 py-3 text-center border-0">ID</th>
+                  <th className="px-3 py-3 text-center border-0">Registro</th>
+                  <th className="px-3 py-3 text-center border-0">Tipo</th>
+                  <th className="px-3 py-3 text-center border-0">Comprador</th>
+                  <th className="px-3 py-3 text-center border-0">Fecha</th>
+                  <th className="px-3 py-3 text-center border-0">Valor</th>
+                  <th className="px-3 py-3 text-center border-0">Estado</th>
+                  <th className="px-3 py-3 text-center border-0">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredVentas.length > 0 ? (
                   filteredVentas.map((v) => (
-                    <tr key={v.id} className="border-t hover:bg-gray-50">
-                      <td className="px-4 py-2 text-center">{v.id}</td>
-                      <td className="px-4 py-2 text-center">{v.registro}</td>
-                      <td className="px-4 py-2 text-center">{v.tipo}</td>
-                      <td className="px-4 py-2 text-center truncate max-w-[150px]">{v.comprador}</td>
-                      <td className="px-4 py-2 text-center">{v.fecha}</td>
-                      <td className="px-4 py-2 text-center font-semibold text-purple-700">
+                    <tr
+                      key={v.id}
+                      className="hover:bg-gray-50 border-t border-gray-200"
+                    >
+                      <td className="px-3 py-3 text-center border-0">{v.id}</td>
+                      <td className="px-3 py-3 text-center border-0">{v.registro}</td>
+                      <td className="px-3 py-3 text-center border-0">{v.tipo}</td>
+                      <td className="px-3 py-3 text-center border-0 truncate max-w-[150px]">{v.comprador}</td>
+                      <td className="px-3 py-3 text-center border-0">{v.fecha}</td>
+                      <td className="px-3 py-3 text-center font-semibold text-purple-700 border-0">
                         {v.valor}
                       </td>
-                      <td className="px-4 py-2 text-center">
+                      <td className="px-3 py-3 text-center border-0">
                         <EstadoBadge estado={v.estado} />
                       </td>
-                      <td className="px-4 py-2 text-center flex gap-3 justify-center">
+                      <td className="px-3 py-3 text-center flex gap-3 justify-center border-0">
                         <button
                           aria-label="Ver detalles de la venta"
-                          className="text-green-600 hover:text-green-800 transition duration-150 p-1"
+                          className="text-green-600 hover:text-green-800 transition-colors p-1"
                           onClick={() => handleViewClick(v)}
                         >
                           <FaEye />
                         </button>
                         <button
                           aria-label="Seguimiento de compra"
-                          className="text-purple-600 hover:text-purple-800 transition duration-150 p-1"
+                          className="text-sky-600 hover:text-sky-800 transition-colors p-1"
                           onClick={() => handleTrackingClick(v)}
                         >
                           <FaChartBar />
@@ -204,7 +285,7 @@ export function SalesManagementPage() {
                   <tr>
                     <td
                       colSpan="8"
-                      className="px-4 py-4 text-center text-gray-500"
+                      className="px-4 py-6 text-center text-gray-500 border-0"
                     >
                       No se encontraron resultados
                     </td>
@@ -214,37 +295,13 @@ export function SalesManagementPage() {
             </table>
           </div>
         </div>
-      </DashboardLayout>
+      </div>
 
-      {/* --- MODALES RENDERIZADOS FUERA DEL LAYOUT --- */}
-      {/* 1. Formulario de Creación/Edición */}
-      {showForm && (
-        <SaleForm onSubmit={handleSaveSale} onClose={handleCloseForm} />
-      )}
-
-      {/* 2. Modal de Visualización (ViewSaleModal) */}
-      {viewingSale && (
-        <ViewSaleModal
-          sale={viewingSale}
-          onClose={() => setViewingSale(null)}
-        />
-      )}
-
-      {/* 3. Modal de Personas Interesadas (InterestedPeopleTable) */}
-      {showInterestedPeople && (
-        <InterestedPeopleTable
-          onClose={() => setShowInterestedPeople(false)}
-        />
-      )}
-
-      {/* 4. Modal de Seguimiento (PurchaseTrackingModal) */}
-      {trackingSale && (
-        <PurchaseTrackingModal
-          venta={trackingSale}
-          onClose={() => setTrackingSale(null)}
-          onUpdate={handleUpdateTracking}
-        />
-      )}
+      {/* --- MODALES RENDERIZADOS CON PORTAL --- */}
+      {renderFormModal()}
+      {renderViewModal()}
+      {renderInterestedPeopleModal()}
+      {renderTrackingModal()}
     </>
   );
 }

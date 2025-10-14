@@ -41,95 +41,140 @@ export default function EditTenantForm({ tenant, onClose, onUpdate }) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-      <div className="bg-white rounded-lg shadow-lg w-[550px] p-6 relative animate-fadeIn">
-        {/* Botón cerrar */}
+    // Fondo del modal con estilo consistente
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50 p-4">
+      {/* Contenido principal del modal */}
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative max-h-[90vh] overflow-hidden">
+        
+        {/* Header con estilo del banner */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Editar Arrendatario</h2>
+          <p className="text-gray-600 text-sm">Actualice la información del arrendatario</p>
+        </div>
+
+        {/* Botón cerrar con estilo azul */}
         <button
-          className="absolute top-3 right-3 text-gray-600 hover:text-red-600"
           onClick={onClose}
+          className="absolute top-6 right-6 text-gray-500 hover:text-blue-600 transition duration-150 p-1 rounded-full"
         >
-          <FaTimes size={18} />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
         </button>
 
-        <h2 className="text-xl font-bold mb-4 text-purple-700">
-          Editar arrendatario
-        </h2>
+        {/* Formulario */}
+        <form onSubmit={handleSubmit}>
+          <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 space-y-4">
+            
+            {/* Primer Nombre */}
+            <div>
+              <label htmlFor="primerNombre" className="block font-semibold text-gray-700 mb-2">
+                Primer nombre <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="primerNombre"
+                type="text"
+                name="primerNombre"
+                value={formData.primerNombre}
+                onChange={handleChange}
+                className={`w-full border rounded-lg p-3 transition duration-150 ${
+                  errors.primerNombre
+                    ? "border-red-500 ring-2 ring-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                }`}
+                placeholder="Ej: Juan"
+              />
+              {errors.primerNombre && (
+                <p className="text-red-500 text-sm mt-1">{errors.primerNombre}</p>
+              )}
+            </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Primer Nombre */}
-          <div>
-            <input
-              type="text"
-              name="primerNombre"
-              value={formData.primerNombre}
-              onChange={handleChange}
-              placeholder="Primer Nombre"
-              className="w-full border p-2 rounded"
-            />
-            {errors.primerNombre && (
-              <p className="text-red-500 text-sm">{errors.primerNombre}</p>
-            )}
+            {/* Primer Apellido */}
+            <div>
+              <label htmlFor="primerApellido" className="block font-semibold text-gray-700 mb-2">
+                Primer apellido <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="primerApellido"
+                type="text"
+                name="primerApellido"
+                value={formData.primerApellido}
+                onChange={handleChange}
+                className={`w-full border rounded-lg p-3 transition duration-150 ${
+                  errors.primerApellido
+                    ? "border-red-500 ring-2 ring-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                }`}
+                placeholder="Ej: Pérez"
+              />
+              {errors.primerApellido && (
+                <p className="text-red-500 text-sm mt-1">{errors.primerApellido}</p>
+              )}
+            </div>
+
+            {/* Correo */}
+            <div>
+              <label htmlFor="correo" className="block font-semibold text-gray-700 mb-2">
+                Correo electrónico <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="correo"
+                type="email"
+                name="correo"
+                value={formData.correo}
+                onChange={handleChange}
+                className={`w-full border rounded-lg p-3 transition duration-150 ${
+                  errors.correo
+                    ? "border-red-500 ring-2 ring-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                }`}
+                placeholder="ejemplo@dominio.com"
+              />
+              {errors.correo && (
+                <p className="text-red-500 text-sm mt-1">{errors.correo}</p>
+              )}
+            </div>
+
+            {/* Teléfono */}
+            <div>
+              <label htmlFor="telefono" className="block font-semibold text-gray-700 mb-2">
+                Teléfono <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="telefono"
+                type="text"
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleChange}
+                className={`w-full border rounded-lg p-3 transition duration-150 ${
+                  errors.telefono
+                    ? "border-red-500 ring-2 ring-red-500"
+                    : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                }`}
+                placeholder="Ej: 3001234567"
+              />
+              {errors.telefono && (
+                <p className="text-red-500 text-sm mt-1">{errors.telefono}</p>
+              )}
+            </div>
+
           </div>
 
-          {/* Primer Apellido */}
-          <div>
-            <input
-              type="text"
-              name="primerApellido"
-              value={formData.primerApellido}
-              onChange={handleChange}
-              placeholder="Primer Apellido"
-              className="w-full border p-2 rounded"
-            />
-            {errors.primerApellido && (
-              <p className="text-red-500 text-sm">{errors.primerApellido}</p>
-            )}
-          </div>
-
-          {/* Correo */}
-          <div>
-            <input
-              type="email"
-              name="correo"
-              value={formData.correo}
-              onChange={handleChange}
-              placeholder="Correo"
-              className="w-full border p-2 rounded"
-            />
-            {errors.correo && (
-              <p className="text-red-500 text-sm">{errors.correo}</p>
-            )}
-          </div>
-
-          {/* Teléfono */}
-          <div>
-            <input
-              type="text"
-              name="telefono"
-              value={formData.telefono}
-              onChange={handleChange}
-              placeholder="Teléfono"
-              className="w-full border p-2 rounded"
-            />
-            {errors.telefono && (
-              <p className="text-red-500 text-sm">{errors.telefono}</p>
-            )}
-          </div>
-
-          {/* Botones */}
-          <div className="flex justify-end gap-3 mt-6">
+          {/* Botones de acción */}
+          <div className="flex gap-3 pt-6">
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+              className="flex-1 px-4 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition duration-150 transform hover:scale-[1.02]"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded flex items-center gap-2"
+              className="flex-1 px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg shadow-blue-400/50 hover:bg-blue-700 transition duration-150 transform hover:scale-[1.02] flex items-center justify-center gap-2"
             >
-              <FaSave /> Guardar cambios
+              <FaSave size={16} />
+              Guardar Cambios
             </button>
           </div>
         </form>

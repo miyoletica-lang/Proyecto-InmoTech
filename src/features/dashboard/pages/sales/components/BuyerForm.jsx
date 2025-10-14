@@ -19,7 +19,6 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
     const formTitle = isEditing ? "Editar Comprador" : "Registro de Comprador";
     const buttonText = isEditing ? "Actualizar Comprador" : "Guardar Comprador";
 
-    // ... (useEffect, validateNameField, validateField, handleChange, handleSubmit, isButtonDisabled se mantienen iguales)
     useEffect(() => {
         setFormData(
             initialData || {
@@ -139,40 +138,42 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
         requiredFields.some((field) => !formData[field].trim());
 
     return (
-        // 🔑 Contenedor del Fondo/Overlay:
-        // 'fixed inset-0' asegura 100% de alto/ancho de la ventana.
-        // 'z-[100]' asegura que esté por encima de todo.
-        // 'flex items-center justify-center' asegura el centrado vertical y horizontal.
+        // Fondo del modal con desenfoque - ÚNICO CAMBIO PRINCIPAL
         <div 
-            className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-[100] p-4" 
+            className="fixed inset-0 flex items-center justify-center bg-gray-900/70 backdrop-blur-sm z-50 p-4" 
             onClick={onClose}
         >
-            {/* Contenedor del Formulario (Centrado en el Overlay) */}
+            {/* Contenedor del formulario - MANTIENE TODOS LOS ESTILOS ORIGINALES */}
             <div
-                className="bg-white rounded-xl shadow-2xl w-full max-w-xl p-8 relative transform transition-all duration-300 scale-100 overflow-y-auto max-h-[90vh]"
+                className="bg-white rounded-xl shadow-2xl w-full max-w-xl p-6 relative transform transition-all duration-300 scale-100 overflow-y-auto max-h-[90vh]"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Botón cerrar */}
+                {/* Botón cerrar con estilo azul */}
                 <button
                     onClick={onClose}
                     aria-label="Cerrar formulario"
-                    className="absolute top-4 right-4 text-gray-500 hover:text-red-600 transition duration-150 text-xl font-bold p-1"
+                    className="absolute top-4 right-4 text-gray-500 hover:text-blue-600 transition duration-150 p-1 rounded-full"
                 >
-                    &times;
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
                 </button>
 
-                {/* Título */}
-                <h2 className="text-2xl font-extrabold text-center text-purple-700 mb-6 border-b-2 border-purple-100 pb-3">
-                    {formTitle}
-                </h2>
+                {/* Header con estilo del banner */}
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">{formTitle}</h2>
+                    <p className="text-gray-600 text-sm">
+                        {isEditing ? "Actualice la información del comprador" : "Complete la información requerida para registrar un nuevo comprador"}
+                    </p>
+                </div>
 
-                {/* Formulario */}
+                {/* Formulario - CONTENIDO ORIGINAL SIN CAMBIOS */}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Tipo de documento y Documento */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Tipo de documento */}
                         <div>
-                            <label htmlFor="tipoDocumento" className="block text-sm font-semibold text-gray-700 mb-1">
+                            <label htmlFor="tipoDocumento" className="block text-xs font-semibold text-gray-700 mb-1">
                                 Tipo documento
                             </label>
                             <select
@@ -180,7 +181,7 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
                                 name="tipoDocumento"
                                 value={formData.tipoDocumento}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-50 focus:ring-purple-500 focus:border-purple-500 transition duration-150 shadow-sm"
+                                className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-150 shadow-sm text-sm text-gray-700 bg-white"
                             >
                                 <option value="CC">Cédula de Ciudadanía (CC)</option>
                                 <option value="CE">Cédula de Extranjería (CE)</option>
@@ -190,7 +191,7 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
                         
                         {/* Documento */}
                         <div className="md:col-span-2">
-                            <label htmlFor="documento" className="block text-sm font-semibold text-gray-700 mb-1">
+                            <label htmlFor="documento" className="block text-xs font-semibold text-gray-700 mb-1">
                                 # Documento <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -199,10 +200,10 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
                                 name="documento"
                                 value={formData.documento}
                                 onChange={handleChange}
-                                className={`w-full border rounded-lg p-2.5 bg-gray-50 transition duration-150 shadow-sm ${
+                                className={`w-full p-2.5 border rounded-lg focus:outline-none transition duration-150 shadow-sm text-sm text-gray-700 bg-white ${
                                     errors.documento
-                                        ? "border-red-500 ring-2 ring-red-200"
-                                        : "border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                                        ? "border-red-500 ring-1 ring-red-500 focus:ring-red-500 focus:border-red-500"
+                                        : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                 }`}
                                 placeholder="Ej: 1020304050"
                             />
@@ -219,7 +220,7 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
                             { id: "segundoApellido", label: "Segundo Apellido", placeholder: "Ej: Serna (opcional)" },
                         ].map(({ id, label, placeholder }) => (
                             <div key={id}>
-                                <label htmlFor={id} className="block text-sm font-semibold text-gray-700 mb-1">
+                                <label htmlFor={id} className="block text-xs font-semibold text-gray-700 mb-1">
                                     {label}
                                 </label>
                                 <input
@@ -228,10 +229,10 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
                                     name={id}
                                     value={formData[id]}
                                     onChange={handleChange}
-                                    className={`w-full border rounded-lg p-2.5 bg-gray-50 transition duration-150 shadow-sm ${
+                                    className={`w-full p-2.5 border rounded-lg focus:outline-none transition duration-150 shadow-sm text-sm text-gray-700 bg-white ${
                                         errors[id]
-                                            ? "border-red-500 ring-2 ring-red-200"
-                                            : "border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                                            ? "border-red-500 ring-1 ring-red-500 focus:ring-red-500 focus:border-red-500"
+                                            : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                     }`}
                                     placeholder={placeholder}
                                 />
@@ -240,11 +241,11 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
                         ))}
                     </div>
 
-                    {/* Correo y Teléfono en una sola fila para ocupar el ancho (grid-cols-2) */}
+                    {/* Correo y Teléfono */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
                         {/* Correo */}
                         <div>
-                            <label htmlFor="correo" className="block text-sm font-semibold text-gray-700 mb-1">
+                            <label htmlFor="correo" className="block text-xs font-semibold text-gray-700 mb-1">
                                 Correo <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -253,10 +254,10 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
                                 name="correo"
                                 value={formData.correo}
                                 onChange={handleChange}
-                                className={`w-full border rounded-lg p-2.5 bg-gray-50 transition duration-150 shadow-sm ${
+                                className={`w-full p-2.5 border rounded-lg focus:outline-none transition duration-150 shadow-sm text-sm text-gray-700 bg-white ${
                                     errors.correo
-                                        ? "border-red-500 ring-2 ring-red-200"
-                                        : "border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                                        ? "border-red-500 ring-1 ring-red-500 focus:ring-red-500 focus:border-red-500"
+                                        : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                 }`}
                                 placeholder="ejemplo@dominio.com"
                             />
@@ -265,7 +266,7 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
 
                         {/* Teléfono */}
                         <div>
-                            <label htmlFor="telefono" className="block text-sm font-semibold text-gray-700 mb-1">
+                            <label htmlFor="telefono" className="block text-xs font-semibold text-gray-700 mb-1">
                                 Teléfono <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -274,10 +275,10 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
                                 name="telefono"
                                 value={formData.telefono}
                                 onChange={handleChange}
-                                className={`w-full border rounded-lg p-2.5 bg-gray-50 transition duration-150 shadow-sm ${
+                                className={`w-full p-2.5 border rounded-lg focus:outline-none transition duration-150 shadow-sm text-sm text-gray-700 bg-white ${
                                     errors.telefono
-                                        ? "border-red-500 ring-2 ring-red-200"
-                                        : "border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                                        ? "border-red-500 ring-1 ring-red-500 focus:ring-red-500 focus:border-red-500"
+                                        : "border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                                 }`}
                                 placeholder="Ej: 3001234567"
                             />
@@ -285,14 +286,14 @@ export default function BuyerForm({ onSubmit, onClose, nextId, initialData }) {
                         </div>
                     </div>
 
-                    {/* Botón guardar */}
+                    {/* Botón guardar con estilo azul */}
                     <button
                         type="submit"
                         disabled={isButtonDisabled}
-                        className={`text-white px-4 py-3 rounded-lg w-full font-bold transition duration-200 shadow-lg mt-6 ${
+                        className={`px-6 py-3 rounded-lg w-full font-bold transition duration-200 shadow-lg mt-6 ${
                             isButtonDisabled
-                                ? "bg-gray-400 cursor-not-allowed shadow-none"
-                                : "bg-purple-600 hover:bg-purple-700 active:bg-purple-800 transform hover:scale-[1.005]"
+                                ? "bg-gray-400 text-gray-200 cursor-not-allowed shadow-none"
+                                : "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-400/50 transform hover:scale-[1.02]"
                         }`}
                     >
                         {buttonText}

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
+import ReactDOM from 'react-dom';
 import { FaUserPlus, FaEye, FaEdit, FaSearch, FaTrash } from "react-icons/fa";
-import DashboardLayout from "../../../../../shared/components/dashboard/Layout/DashboardLayout";
 import "../../../../../shared/styles/globals.css";
 
 // ASUMO que estos componentes ya contienen la estructura del modal (fondo gris y z-index alto)
@@ -116,97 +116,148 @@ export function LeasesManagementPage() {
 
   const handleSubmit = tenantToEdit ? handleUpdateTenant : handleCreateTenant;
 
+  // 🔑 --- FUNCIONES PARA RENDERIZAR MODALES CON PORTAL ---
+  const renderFormModal = () => {
+    if (!showForm) return null;
+
+    const modalContent = (
+      <LeasesPersonForm
+        onSubmit={handleSubmit}
+        onClose={handleCloseForm}
+        nextId={idCounter.current}
+        initialData={tenantToEdit}
+      />
+    );
+
+    return ReactDOM.createPortal(
+      modalContent,
+      document.getElementById('modal-root') || document.body
+    );
+  };
+
+  const renderViewModal = () => {
+    if (!tenantToView) return null;
+
+    const modalContent = (
+      <ViewTenantModal tenant={tenantToView} onClose={() => setTenantToView(null)} />
+    );
+
+    return ReactDOM.createPortal(
+      modalContent,
+      document.getElementById('modal-root') || document.body
+    );
+  };
+
   return (
     <>
-      <DashboardLayout>
-        <div className="tenants-page p-6">
-          {/* Header */}
-          <header className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Gestión de arrendatarios</h1>
-            <button
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-              onClick={() => {
-                setTenantToEdit(null);
-                setShowForm(true);
-              }}
-            >
-              <FaUserPlus /> Crear arrendatario
-            </button>
-          </header>
+      <div className="p-6">
+        {/* HEADER CON ESTILO DEL BANNER */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Gestión de arrendatarios
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Administra toda la información de tus arrendatarios y sus propiedades
+          </p>
+        </div>
 
-          {/* Barra de búsqueda */}
-          <div className="relative w-full max-w-sm mb-6">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar arrendatario por nombre, apellido, doc, correo..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border border-gray-300 rounded-md p-2 pl-10 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
+        {/* CONTENEDOR SUPERIOR CON BOTÓN Y BÚSQUEDA */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex-1 max-w-md">
+            {/* BARRA DE BÚSQUEDA */}
+            <div className="relative w-full">
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar arrendatario por nombre, apellido, doc, correo..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition duration-150 shadow-sm"
+              />
+            </div>
           </div>
+          
+          {/* BOTÓN CON COLOR AZUL COMO EL BANNER */}
+          <button
+            onClick={() => {
+              setTenantToEdit(null);
+              setShowForm(true);
+            }}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow-lg transition duration-200 font-semibold"
+          >
+            <FaUserPlus className="text-lg" /> Crear arrendatario
+          </button>
+        </div>
 
-          {/* Lista */}
-          <div className="bg-blue-700 text-white font-semibold rounded-t-lg px-4 py-2 flex items-center gap-2">
-            <span>🏠</span> Lista de arrendatarios ({filteredTenants.length}{" "}
+        {/* TABLA CON ESTILO ACTUALIZADO */}
+        <div className="rent-table-wrapper rounded-xl shadow-lg">
+          {/* CABECERA DE TABLA CON COLOR AZUL */}
+          <div className="rent-table-header rounded-t-xl bg-blue-700">
+            🏠 Lista de arrendatarios ({filteredTenants.length}{" "}
             {filteredTenants.length === 1 ? "resultado" : "resultados"})
           </div>
-
-          {/* Tabla */}
+          
           <div className="overflow-x-auto">
-            <table className="w-full table-fixed border-collapse bg-white shadow-md rounded-b-lg overflow-hidden">
+            <table className="rent-table w-full border-collapse bg-white rounded-b-lg overflow-hidden">
               <thead className="bg-green-50">
                 <tr>
-                  <th className="w-12 px-2 py-2 text-center">ID</th>
-                  <th className="w-20 px-2 py-2 text-center">Tipo doc</th>
-                  <th className="w-28 px-2 py-2 text-center">#Documento</th>
-                  <th className="w-28 px-2 py-2 text-center">Primer nombre</th>
-                  <th className="w-28 px-2 py-2 text-center">Segundo nombre</th>
-                  <th className="w-28 px-2 py-2 text-center">Primer apellido</th>
-                  <th className="w-28 px-2 py-2 text-center">Segundo apellido</th>
-                  <th className="w-48 px-2 py-2 text-center">Correo</th>
-                  <th className="w-32 px-2 py-2 text-center">Teléfono</th>
-                  <th className="w-24 px-2 py-2 text-center">Acciones</th>
+                  <th className="px-3 py-3 text-center border-0">ID</th>
+                  <th className="px-3 py-3 text-center border-0">Tipo doc</th>
+                  <th className="px-3 py-3 text-center border-0">#Documento</th>
+                  <th className="px-3 py-3 text-center border-0">Primer nombre</th>
+                  <th className="px-3 py-3 text-center border-0">Segundo nombre</th>
+                  <th className="px-3 py-3 text-center border-0">Primer apellido</th>
+                  <th className="px-3 py-3 text-center border-0">Segundo apellido</th>
+                  <th className="px-3 py-3 text-center border-0">Correo</th>
+                  <th className="px-3 py-3 text-center border-0">Teléfono</th>
+                  <th className="px-3 py-3 text-center border-0">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredTenants.length > 0 ? (
                   filteredTenants.map((t) => (
-                    <tr key={t.id} className="border-t hover:bg-gray-50">
-                      <td className="px-2 py-2 text-center">{t.id}</td>
-                      <td className="px-2 py-2 text-center">{t.tipoDocumento}</td>
-                      <td className="px-2 py-2 text-center">{t.documento}</td>
-                      <td className="px-2 py-2 text-center">{t.primerNombre}</td>
-                      <td className="px-2 py-2 text-center">{t.segundoNombre || "-"}</td>
-                      <td className="px-2 py-2 text-center">{t.primerApellido}</td>
-                      <td className="px-2 py-2 text-center">{t.segundoApellido || "-"}</td>
-                      <td className="px-2 py-2 text-center truncate">
+                    <tr
+                      key={t.id}
+                      className="hover:bg-gray-50 border-t border-gray-200"
+                    >
+                      <td className="px-3 py-3 text-center border-0">{t.id}</td>
+                      <td className="px-3 py-3 text-center border-0">{t.tipoDocumento}</td>
+                      <td className="px-3 py-3 text-center border-0">{t.documento}</td>
+                      <td className="px-3 py-3 text-center border-0">{t.primerNombre}</td>
+                      <td className="px-3 py-3 text-center border-0">
+                        {t.segundoNombre || "-"}
+                      </td>
+                      <td className="px-3 py-3 text-center border-0">{t.primerApellido}</td>
+                      <td className="px-3 py-3 text-center border-0">
+                        {t.segundoApellido || "-"}
+                      </td>
+                      <td className="px-3 py-3 text-center border-0 truncate">
                         <a
                           href={`mailto:${t.correo}`}
-                          className="text-blue-600 underline"
+                          className="text-blue-600 underline hover:text-blue-800"
                         >
                           {t.correo}
                         </a>
                       </td>
-                      <td className="px-2 py-2 text-center">{t.telefono}</td>
-                      <td className="px-2 py-2 text-center flex gap-2 justify-center">
+                      <td className="px-3 py-3 text-center border-0">{t.telefono}</td>
+                      <td className="px-3 py-3 text-center flex gap-2 justify-center border-0">
                         <button
                           aria-label="Editar arrendatario"
-                          className="text-green-600 hover:text-green-800"
+                          className="text-green-600 hover:text-green-800 transition-colors"
                           onClick={() => handleEditClick(t)}
                         >
                           <FaEdit />
                         </button>
                         <button
                           aria-label="Ver arrendatario"
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-sky-600 hover:text-sky-800 transition-colors"
                           onClick={() => handleViewClick(t)}
                         >
                           <FaEye />
                         </button>
                         <button
                           aria-label="Eliminar arrendatario"
-                          className="text-red-600 hover:text-red-800"
+                          className="text-red-600 hover:text-red-800 transition-colors"
                           onClick={() => handleDeleteTenant(t.id)}
                         >
                           <FaTrash />
@@ -216,8 +267,8 @@ export function LeasesManagementPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="10" className="px-4 py-4 text-center text-gray-500">
-                      No se encontraron arrendatarios que coincidan con la búsqueda.
+                    <td colSpan="10" className="px-4 py-6 text-center text-gray-500 border-0">
+                      No se encontraron arrendatarios.
                     </td>
                   </tr>
                 )}
@@ -225,24 +276,11 @@ export function LeasesManagementPage() {
             </table>
           </div>
         </div>
-      </DashboardLayout>
+      </div>
 
-      {/* RENDERIZADO DE MODALES */}
-      {/* Estos se renderizan fuera del DashboardLayout, pero dentro del fragmento (<>), */}
-      {/* lo que permite que se coloquen encima del layout si tienen la clase z-50. */}
-      
-      {showForm && (
-        <LeasesPersonForm
-          onSubmit={handleSubmit}
-          onClose={handleCloseForm}
-          nextId={idCounter.current}
-          initialData={tenantToEdit}
-        />
-      )}
-
-      {tenantToView && (
-        <ViewTenantModal tenant={tenantToView} onClose={() => setTenantToView(null)} />
-      )}
+      {/* MODALES CON PORTAL */}
+      {renderFormModal()}
+      {renderViewModal()}
     </>
   );
 }

@@ -119,13 +119,12 @@ export default function SalesForm({ onClose, onSubmit }) {
     // Función para obtener la clase de estilo (incluyendo el resaltado de error)
     const getFieldClass = useCallback((fieldName) => {
         // Clase base para campos con estilo moderno y responsivo
-        // Se ha ajustado el padding p-2.5 para hacerlo más pequeño visualmente
-        const baseClass = "w-full p-2.5 border rounded-lg font-sans text-sm text-gray-700 bg-gray-50 transition duration-200 shadow-sm";
+        const baseClass = "w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-150 shadow-sm text-sm text-gray-700 bg-white";
         
-        // Aplica el foco púrpura y el error rojo
+        // Aplica el foco azul y el error rojo
         const errorClass = errors[fieldName] 
             ? 'border-red-500 ring-1 ring-red-500 focus:ring-red-500 focus:border-red-500' 
-            : 'border-gray-300 focus:ring-purple-500 focus:border-purple-500';
+            : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500';
             
         return `${baseClass} ${errorClass}`;
     }, [errors]);
@@ -422,11 +421,11 @@ export default function SalesForm({ onClose, onSubmit }) {
                         name={name}
                         ref={setElRef(name)}
                         type="checkbox"
-                        className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 shadow-sm transition duration-150"
+                        className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 shadow-sm transition duration-150"
                         onChange={handleInputChange}
                         onBlur={onBlurHandler}
                     />
-                    <label htmlFor={name} className="text-sm font-semibold text-gray-700 font-sans cursor-pointer">
+                    <label htmlFor={name} className="text-sm font-semibold text-gray-700 cursor-pointer">
                         {label}
                         {isRequired && <span className="text-red-500 ml-1">*</span>}
                     </label>
@@ -438,8 +437,7 @@ export default function SalesForm({ onClose, onSubmit }) {
         }
 
         const LabelContent = (
-            // Etiqueta más pequeña
-            <label htmlFor={name} className="block text-xs font-semibold text-gray-700 mb-1 font-sans">
+            <label htmlFor={name} className="block text-xs font-semibold text-gray-700 mb-1">
                 {label}
                 {isRequired && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -473,7 +471,6 @@ export default function SalesForm({ onClose, onSubmit }) {
         }
         
         if (as === "textarea") {
-            // El textarea ocupa 2 columnas en desktop para mejor usabilidad
             return (
                 <div className="col-span-1 sm:col-span-2 flex flex-col">
                     {LabelContent}
@@ -481,7 +478,7 @@ export default function SalesForm({ onClose, onSubmit }) {
                         id={name}
                         name={name}
                         ref={setElRef(name)}
-                        className={`${getFieldClass(name)} h-20 resize-none`} // Altura reducida
+                        className={`${getFieldClass(name)} h-20 resize-none`}
                         placeholder={placeholder}
                         defaultValue={(displayValuesRef.current[name] || initial[name]) ?? ""} 
                         onChange={handleInputChange}
@@ -519,32 +516,40 @@ export default function SalesForm({ onClose, onSubmit }) {
     const formattedPrice = formatNumberWithThousandsSeparator(valuesRef.current.inmueblePrecio || 0);
 
     return (
-        // Contenedor principal del modal: Oscurece el fondo y centra el contenido
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center p-4 z-50 overflow-y-auto font-sans">
+        // 🔑 Fondo del modal con desenfoque - CAMBIO PRINCIPAL
+        <div 
+            className="fixed inset-0 flex items-center justify-center bg-gray-900/70 backdrop-blur-sm z-50 p-4 overflow-y-auto"
+            onClick={onClose}
+        >
             {/* Contenedor del formulario: Diseño de tarjeta moderna */}
-            {/* Se ha cambiado el max-w-4xl a max-w-3xl para reducir el tamaño */}
-            <div className="bg-white w-full max-w-3xl rounded-xl shadow-2xl p-5 sm:p-6 relative my-8 transform transition-all duration-300">
+            <div 
+                className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 relative my-8 transform transition-all duration-300 max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+            >
                 
                 {/* Botón de cierre */}
-                <button onClick={onClose} className="absolute top-3 right-3 text-gray-500 hover:text-purple-600 p-1 rounded-full transition duration-150">
+                <button onClick={onClose} className="absolute top-6 right-6 text-gray-500 hover:text-blue-600 p-1 rounded-full transition duration-150">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
                 </button>
 
-                {/* Título principal más pequeño */}
-                <h2 className="text-2xl font-bold mb-3">Nueva venta</h2>
+                {/* Título principal con estilo del banner */}
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Nueva venta</h2>
+                    <p className="text-gray-600 text-sm">Complete la información requerida para registrar una nueva venta</p>
+                </div>
 
                 {/* Barra de progreso */}
                 <div className="mb-6">
                     <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
                         <div
-                            className="bg-purple-600 h-1.5 rounded-full transition-all duration-500 ease-in-out shadow-lg shadow-purple-400/50"
+                            className="bg-blue-600 h-1.5 rounded-full transition-all duration-500 ease-in-out shadow-lg shadow-blue-400/50"
                             style={{ width: `${(step / totalSteps) * 100}%` }}
                         />
                     </div>
                     {/* Texto de paso más pequeño y compacto */}
-                    <p className="text-xs text-purple-700 font-bold mt-2 text-center">
+                    <p className="text-xs text-blue-700 font-bold mt-2 text-center">
                         Paso {step} de {totalSteps}:{" "}
                         <span className="font-semibold text-gray-600">
                             {step === 1 ? "Datos del Vendedor" : 
@@ -558,9 +563,9 @@ export default function SalesForm({ onClose, onSubmit }) {
                     {/* PASO 1: Datos del Vendedor */}
                     {step === 1 && (
                         <div>
-                            {/* Subtítulo más discreto */}
-                            <h3 className="text-lg font-bold text-purple-700 mb-3 pb-1 border-b border-purple-100">1. Información del Vendedor</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4"> {/* Reducción de gap */}
+                            {/* Subtítulo con estilo consistente */}
+                            <h3 className="text-lg font-bold text-blue-800 mb-4 pb-2 border-b border-blue-200">1. Información del Vendedor</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
                                 <Field
                                     name="vendedorTipoDocumento"
                                     as="select"
@@ -581,9 +586,9 @@ export default function SalesForm({ onClose, onSubmit }) {
                     {/* PASO 2: Datos del Comprador */}
                     {step === 2 && (
                         <div>
-                            {/* Subtítulo más discreto */}
-                            <h3 className="text-lg font-bold text-purple-700 mb-3 pb-1 border-b border-purple-100">2. Información del Comprador</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4"> {/* Reducción de gap */}
+                            {/* Subtítulo con estilo consistente */}
+                            <h3 className="text-lg font-bold text-green-800 mb-4 pb-2 border-b border-green-200">2. Información del Comprador</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
                                 <Field
                                     name="compradorTipoDocumento"
                                     as="select"
@@ -604,9 +609,9 @@ export default function SalesForm({ onClose, onSubmit }) {
                     {/* PASO 3: Detalles de la Propiedad */}
                     {step === 3 && (
                         <div>
-                            {/* Subtítulo más discreto */}
-                            <h3 className="text-lg font-bold text-purple-700 mb-3 pb-1 border-b border-purple-100">3. Detalles y Ubicación del Inmueble</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4"> {/* Reducción de gap */}
+                            {/* Subtítulo con estilo consistente */}
+                            <h3 className="text-lg font-bold text-yellow-800 mb-4 pb-2 border-b border-yellow-200">3. Detalles y Ubicación del Inmueble</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
                                 {/* Propiedad */}
                                 <Field
                                     name="inmuebleTipo"
@@ -654,15 +659,15 @@ export default function SalesForm({ onClose, onSubmit }) {
                     {/* PASO 4: Precio de Venta */}
                     {step === 4 && (
                         <div>
-                            {/* Subtítulo más discreto */}
-                            <h3 className="text-lg font-bold text-purple-700 mb-3 pb-1 border-b border-purple-100">4. Precio de Venta</h3>
+                            {/* Subtítulo con estilo consistente */}
+                            <h3 className="text-lg font-bold text-purple-800 mb-4 pb-2 border-b border-purple-200">4. Precio de Venta</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 mb-6 max-w-xl mx-auto">
                                 <Field name="inmueblePrecio" placeholder="Precio total (Ej: 150.000.000)" />
                             </div>
 
                             {/* Resumen del Precio */}
-                            <div className="p-4 bg-purple-50 border border-purple-300 rounded-xl shadow-inner text-gray-800 max-w-xl mx-auto">
-                                <h4 className="text-base font-extrabold mb-2 text-purple-800 border-b border-purple-200 pb-1">Resumen de la Propiedad</h4>
+                            <div className="p-4 bg-blue-50 border border-blue-300 rounded-xl shadow-inner text-gray-800 max-w-xl mx-auto">
+                                <h4 className="text-base font-extrabold mb-2 text-blue-800 border-b border-blue-200 pb-1">Resumen de la Propiedad</h4>
                                 <div className="space-y-1 text-sm">
                                     <div className="flex justify-between">
                                         <p className="font-medium text-gray-700">Tipo/Nombre:</p>
@@ -676,9 +681,9 @@ export default function SalesForm({ onClose, onSubmit }) {
                                         <p className="font-medium text-gray-700">Garaje:</p>
                                         <p className="text-right font-medium text-gray-900">{valuesRef.current.inmuebleGaraje ? "Sí" : "No"}</p>
                                     </div>
-                                    <div className="border-t border-purple-400 pt-2 flex justify-between items-center font-extrabold text-lg mt-2">
+                                    <div className="border-t border-blue-400 pt-2 flex justify-between items-center font-extrabold text-lg mt-2">
                                         <span className="text-gray-900">PRECIO FINAL:</span>
-                                        <span className="text-purple-700">$ {formattedPrice}</span>
+                                        <span className="text-blue-700">$ {formattedPrice}</span>
                                     </div>
                                 </div>
                             </div>
@@ -700,24 +705,24 @@ export default function SalesForm({ onClose, onSubmit }) {
                         {/* Espaciador (solo aparece si el botón Atrás no está) */}
                         {step === 1 && <div />}
                         
-                        {/* Botón Siguiente: Primario, color púrpura, solo si no es el último paso */}
+                        {/* Botón Siguiente: Primario, color azul, solo si no es el último paso */}
                         {step < totalSteps && (
                             <button
                                 type="button"
                                 onClick={handleNextStep}
-                                className="px-6 py-2 text-sm bg-purple-600 text-white font-bold rounded-lg shadow-lg shadow-purple-400/50 hover:bg-purple-700 transition duration-150 transform hover:scale-[1.02]"
+                                className="px-6 py-2 text-sm bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-400/50 hover:bg-blue-700 transition duration-150 transform hover:scale-[1.02]"
                             >
                                 Siguiente
                             </button>
                         )}
                         
-                        {/* Botón Final: Principal, color púrpura, solo en el último paso */}
+                        {/* Botón Final: Principal, color azul, solo en el último paso */}
                         {step === totalSteps && (
                             <button
                                 type="submit"
-                                className="px-6 py-2 text-sm bg-purple-600 text-white font-bold rounded-lg shadow-lg shadow-purple-400/50 hover:bg-purple-700 transition duration-150 transform hover:scale-[1.02]"
+                                className="px-6 py-2 text-sm bg-blue-600 text-white font-bold rounded-lg shadow-lg shadow-blue-400/50 hover:bg-blue-700 transition duration-150 transform hover:scale-[1.02]"
                             >
-                                Registrar Inmueble
+                                Registrar Venta
                             </button>
                         )}
                     </div>
