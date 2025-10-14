@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import DashboardLayout from '../../../../shared/components/dashboard/Layout/DashboardLayout'
 import { ReportsHeader } from './ReportsHeader'
 import { ReportsTable } from './ReportsTable'
 import CreateReportModal from '../../components/reports/CreateReportModal'
