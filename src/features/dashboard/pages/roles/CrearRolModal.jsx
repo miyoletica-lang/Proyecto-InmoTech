@@ -168,15 +168,21 @@ export default function CrearRolModal({ isOpen, onClose, onSave }) {
 
   const toggleModule = (index) => {
     setModules((prev) =>
-      prev.map((mod, i) =>
-        i === index
-          ? {
-              ...mod,
-              enabled: !mod.enabled,
-              permisosSeleccionados: !mod.enabled ? [...mod.permisos] : [],
-            }
-          : mod
-      )
+      prev.map((mod, i) => {
+        if (i !== index) return mod;
+        const willEnable = !mod.enabled;
+        const newPermisosSeleccionados = willEnable ? [...mod.permisos] : [];
+        const newPermissions = mod.permisos.reduce((acc, p) => {
+          acc[p] = willEnable;
+          return acc;
+        }, {});
+        return {
+          ...mod,
+          enabled: willEnable,
+          permisosSeleccionados: newPermisosSeleccionados,
+          permissions: newPermissions,
+        };
+      })
     );
     setErrors(prev => ({ ...prev, permisos: undefined }));
   };
@@ -251,15 +257,19 @@ export default function CrearRolModal({ isOpen, onClose, onSave }) {
       };
 
       await onSave(nuevoRol);
-      
-      // Limpiar el formulario
+
+      // Limpiar el formulario y reconstruir permissions
       setNombre("");
       setModules(
-        modulesData.map((mod) => ({
-          ...mod,
-          enabled: true,
-          permisosSeleccionados: [...mod.permisos],
-        }))
+          modulesData.map((mod) => ({
+              ...mod,
+              enabled: true,
+              permisosSeleccionados: [...mod.permisos],
+              permissions: mod.permisos.reduce((acc, p) => {
+                  acc[p] = true;
+                  return acc;
+              }, {}),
+          }))
       );
       setErrors({});
       onClose();
@@ -278,6 +288,10 @@ export default function CrearRolModal({ isOpen, onClose, onSave }) {
         ...mod,
         enabled: true,
         permisosSeleccionados: [...mod.permisos],
+        permissions: mod.permisos.reduce((acc, p) => {
+            acc[p] = true;
+            return acc;
+        }, {}),
       }))
     );
     onClose();

@@ -377,9 +377,9 @@ const RolesContent = () => {
             }, 0);
             const nextIdNum = maxId + 1;
             const nextId = nextIdNum < 10 ? `0${nextIdNum}` : `${nextIdNum}`;
-            showToast(`El rol "${nuevoRol.nombre}" ha sido creado correctamente.`, "success");
             return [...prev, { ...nuevoRol, id: nextId }];
           });
+          showToast(`El rol "${nuevoRol.nombre}" ha sido creado correctamente.`, "success");
         }}
       />
 
