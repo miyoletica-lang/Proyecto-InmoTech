@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../../../shared/components/ui/button';
 import { Input } from '../../../../shared/components/ui/input';
@@ -7,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from '../../../../shared/components/ui/badge';
 import PropertyAutocomplete from '../../../../shared/components/ui/PropertyAutocomplete';
 import { usePropertyAutocomplete } from '../../../../shared/hooks/usePropertyAutocomplete';
+import { useToast } from '../../../../shared/hooks/use-toast';
 import { 
   PlusIcon, 
   EditIcon, 
@@ -364,6 +366,9 @@ const CreateReportModal = ({
     ));
   };
 
+  // Hook global de toasts
+  const { toast } = useToast();
+
   // Manejar envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -383,9 +388,21 @@ const CreateReportModal = ({
       };
 
       await onSubmit(reportData);
+      toast({
+        title: initialData ? 'Reporte actualizado' : 'Reporte creado',
+        description: initialData
+          ? 'El reporte fue actualizado correctamente.'
+          : 'El reporte fue creado correctamente.',
+        variant: 'success',
+      });
       onClose();
     } catch (error) {
       console.error('Error al guardar reporte:', error);
+      toast({
+        title: 'Error al guardar reporte',
+        description: error?.message || 'Intenta de nuevo.',
+        variant: 'error',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -406,73 +423,66 @@ const CreateReportModal = ({
 
   if (!isOpen) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-          onClick={onClose}
-        >
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 20 }}
-r4          transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
-          className="bg-white rounded-2xl shadow-2xl ring-1 ring-gray-900/10 w-full max-w-5xl max-h-[85vh] overflow-hidden border-2 border-gray-200 mx-auto flex flex-col"
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05)'
-          }}
-        >
-          {/* Header Mejorado con estilo slate */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100">
-            <div>
-              <h2 className="text-2xl font-bold text-slate-800">
-                {initialData ? 'Editar Reporte' : 'Nuevo Reporte'}
-              </h2>
-              <p className="text-slate-600 mt-1">
-                {initialData ? 'Modifica la información del reporte inmobiliario' : 'Crea un nuevo reporte inmobiliario detallado'}
-              </p>
-              <div className="flex gap-4 mt-3 text-xs">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <span className="text-slate-600">{formData.fechaCreacion}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <span className="text-slate-600">Estado: {formData.estado}</span>
-                </div>
-              </div>
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={onClose}
-              className="p-2 hover:bg-white/50 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5 text-slate-500" />
-            </motion.button>
-          </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay (idéntico a "Nueva Cita") */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={onClose}
+          />
 
-          {/* Content Reorganizado */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="flex justify-center p-6">
-              <form onSubmit={handleSubmit} className="w-full max-w-4xl">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Modal */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.3 }}
+            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header (título y subtítulo igual a "Nueva Cita") */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-200">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-800">
+                  {initialData ? 'Editar Reporte' : 'Nuevo Reporte'}
+                </h2>
+                <p className="text-slate-600 mt-1">
+                  {initialData
+                    ? 'Modifica la información del reporte inmobiliario'
+                    : 'Crea un nuevo reporte inmobiliario detallado'}
+                </p>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={onClose}
+                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-500" />
+              </motion.button>
+            </div>
+
+              {/* Contenido con padding uniforme */}
+              <div className="flex-1 overflow-y-auto min-h-0">
+                <div className="p-6">
+              <form onSubmit={handleSubmit} className="w-full">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 
                 {/* Columna Izquierda - Información Principal */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-4">
                   
                   {/* Sección 1: Identificación de Propiedad */}
                   <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                    <div className="flex items-center mb-4">
+                    <div className="flex items-center mb-3">
                       <div className="p-2 bg-blue-100 rounded-lg mr-3">
                         <Building className="w-5 h-5 text-blue-600" />
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-800">
+                      <h3 className="text-base font-semibold text-gray-800">
                         Identificación de Propiedad
                       </h3>
                     </div>
@@ -662,7 +672,7 @@ r4          transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
                 </div>
 
                 {/* Columna Derecha - Estado y Acciones */}
-                <div className="space-y-6">
+                <div className="space-y-4">
                   
                   {/* Estado del Reporte */}
                   <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
@@ -1233,43 +1243,33 @@ r4          transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
                 </div>
               </div>
             </form>
-            </div>
-          </div>
-
-          {/* Footer - Siempre visible */}
-          <div className="bg-slate-50 border-t border-slate-200 px-8 py-6 flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-slate-600">
-                Campos obligatorios marcados con *
+                </div>
               </div>
-              
-              <div className="flex items-center space-x-3">
+
+              {/* Footer (acciones a la derecha, misma paleta) */}
+              <div className="flex justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4">
                 <Button
                   type="button"
-                  variant="outline"
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="flex items-center space-x-2 px-6"
+                  className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all ease-in-out duration-200"
                 >
-                  <XCircleIcon className="w-4 h-4" />
-                  <span>Cancelar</span>
+                  Cancelar
                 </Button>
                 <Button
                   type="submit"
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white flex items-center space-x-2 px-6 shadow-lg"
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all ease-in-out duration-200"
                 >
-                  <SaveIcon className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Guardando...' : submitLabel}</span>
+                  {isSubmitting ? 'Guardando...' : submitLabel}
                 </Button>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </motion.div>
-      </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

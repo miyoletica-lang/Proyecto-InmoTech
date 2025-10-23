@@ -4,6 +4,7 @@ import { ReportsTable } from './ReportsTable'
 import CreateReportModal from '../../components/reports/CreateReportModal'
 import ViewReportModal from '../../components/reports/ViewReportModal'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useToast } from '../../../../shared/hooks/use-toast'
 
 const Reports = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -614,6 +615,7 @@ const Reports = () => {
         reports={filteredReports}
       />
 
+      {/* Contenido principal (sin overlay local) */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
