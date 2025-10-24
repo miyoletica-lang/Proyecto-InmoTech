@@ -77,7 +77,8 @@ const CreateReportModal = ({
     fecha: getCurrentDate(),
     fechaCreacion: getCurrentDateTime(),
     estado: 'En proceso',
-    seguimientoGeneral: ''
+    seguimientoGeneral: '',
+    responsable: '' // Nuevo campo
   };
 
   // Estados del formulario
@@ -523,6 +524,11 @@ const CreateReportModal = ({
                               <p><span className="font-medium">Área:</span> {selectedProperty.area}</p>
                               <p><span className="font-medium">Precio:</span> {selectedProperty.price}</p>
                               <p><span className="font-medium">Estado:</span> {selectedProperty.status}</p>
+                              {/* Nuevo: Tipo de Inmueble */}
+                              <p>
+                                <span className="font-medium">Tipo de Inmueble:</span>{' '}
+                                {formData.tipoInmueble || selectedProperty?.tipoInmueble || selectedProperty?.type || '—'}
+                              </p>
                             </div>
                           </div>
                           <button
@@ -551,15 +557,15 @@ const CreateReportModal = ({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Ubicación */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                          Ubicación *
+                        <div className="flex items-center justify-between mb-1 min-h-[24px]">
+                          <span className="text-sm font-medium text-gray-700">Ubicación *</span>
                           {selectedProperty && (
-                            <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full flex items-center">
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full flex items-center">
                               <CheckIcon className="h-3 w-3 mr-1" />
                               Auto
                             </span>
                           )}
-                        </label>
+                        </div>
                         <Input
                           value={formData.ubicacion}
                           onChange={(e) => handleChange('ubicacion', e.target.value)}
@@ -574,15 +580,15 @@ const CreateReportModal = ({
 
                       {/* Tipo de Inmueble */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                          Tipo de Inmueble *
+                        <div className="flex items-center justify-between mb-1 min-h-[24px]">
+                          <span className="text-sm font-medium text-gray-700">Tipo de Inmueble *</span>
                           {selectedProperty && (
-                            <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full flex items-center">
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full flex items-center">
                               <CheckIcon className="h-3 w-3 mr-1" />
                               Auto
                             </span>
                           )}
-                        </label>
+                        </div>
                         <Select 
                           value={formData.tipoInmueble} 
                           onValueChange={(value) => handleChange('tipoInmueble', value)}
@@ -609,17 +615,19 @@ const CreateReportModal = ({
                         )}
                       </div>
 
+                      {/* Espacio vacío donde estaba el Responsable del Reporte */}
+
                       {/* Propietario */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                          Propietario *
+                        <div className="flex items-center justify-between mb-1 min-h-[24px]">
+                          <span className="text-sm font-medium text-gray-700">Propietario *</span>
                           {selectedProperty && (
-                            <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full flex items-center">
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full flex items-center">
                               <CheckIcon className="h-3 w-3 mr-1" />
                               Auto
                             </span>
                           )}
-                        </label>
+                        </div>
                         <Input
                           value={formData.propietario}
                           onChange={(e) => handleChange('propietario', e.target.value)}
@@ -650,8 +658,8 @@ const CreateReportModal = ({
                     </div>
                   </div>
 
-                  {/* Sección 2: Descripción */}
-                  <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                  {/* Sección 2: Descripción (arriba) */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm mt-4">
                     <div className="flex items-center mb-4">
                       <div className="p-2 bg-orange-100 rounded-lg mr-3">
                         <FileText className="w-5 h-5 text-orange-600" />
@@ -665,8 +673,26 @@ const CreateReportModal = ({
                       value={formData.descripcion}
                       onChange={(e) => handleChange('descripcion', e.target.value)}
                       placeholder="Descripción detallada del reporte..."
-                      className="min-h-[120px] resize-none"
-                      rows={5}
+                      className="w-full min-h-[160px] resize-y"
+                      rows={6}
+                    />
+                  </div>
+
+                  {/* Responsable del Reporte (debajo y más pequeño) */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm mt-4">
+                    <div className="flex items-center mb-2">
+                      <div className="p-1.5 bg-blue-100 rounded-lg mr-2">
+                        <UserIcon className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <h4 className="text-sm font-semibold text-gray-800">
+                        Responsable del Reporte
+                      </h4>
+                    </div>
+                    <Input
+                      value={formData.responsable}
+                      onChange={(e) => handleChange('responsable', e.target.value)}
+                      placeholder="Nombre del responsable"
+                      className="text-sm"
                     />
                   </div>
                 </div>
@@ -721,30 +747,49 @@ const CreateReportModal = ({
                     </Select>
                   </div>
 
-                  {/* Información Adicional */}
-                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-5">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                  {/* Información del Reporte (compacto y arriba) */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
                       Información del Reporte
                     </h4>
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <div className="flex justify-between">
-                        <span>Fecha de creación:</span>
-                        <span className="font-medium">{formData.fechaCreacion}</span>
+
+                    <div className="space-y-2 text-xs text-gray-700">
+                      {/* Fecha y hora de creación (combinadas) */}
+                      <div className="flex items-start gap-2">
+                        <CalendarIcon className="w-3 h-3 text-gray-500 mt-0.5" />
+                        <div>
+                          <p className="text-gray-600">Fecha y hora de creación</p>
+                          <p className="font-medium text-gray-900">
+                            {formData.fechaCreacion
+                              ? `${formData.fechaCreacion}${formData.horaCreacion ? ` ${formData.horaCreacion}` : ''}`
+                              : 'No definida'}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Hora:</span>
-                        <span className="font-medium">{formData.horaCreacion}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Estado actual:</span>
-                        <span className={`font-medium px-2 py-1 rounded-full text-xs ${
-                          formData.estado === 'Completado' ? 'bg-green-100 text-green-800' :
-                          formData.estado === 'En proceso' ? 'bg-blue-100 text-blue-800' :
-                          formData.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {formData.estado || 'Sin definir'}
-                        </span>
+
+                      {/* Estado actual (Cancelado en rojo) */}
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="w-3 h-3 text-gray-500 mt-0.5" />
+                        <div>
+                          <p className="text-gray-600">Estado actual</p>
+                          <span
+                            className={`font-medium px-2 py-1 rounded-full text-[10px] inline-block
+                              ${
+                                formData.estado === 'Pendiente'
+                                  ? 'bg-yellow-100 text-yellow-700'
+                                  : formData.estado === 'En proceso'
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : formData.estado === 'Completado'
+                                  ? 'bg-green-100 text-green-700'
+                                  : formData.estado === 'Cancelado'
+                                  ? 'bg-red-100 text-red-700'
+                                  : 'bg-gray-100 text-gray-700'
+                              }
+                            `}
+                          >
+                            {formData.estado || 'No definido'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -894,11 +939,11 @@ const CreateReportModal = ({
                     Rubros del Proyecto
                   </h3>
                   <Button
-                    type="button"
-                    onClick={agregarRubro}
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                  type="button"
+                  onClick={agregarRubro}
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors px-4"
+                >
                     <PlusIcon className="w-4 h-4 mr-2" />
                     Agregar Rubro
                   </Button>
