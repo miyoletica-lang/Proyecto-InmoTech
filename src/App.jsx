@@ -4,6 +4,7 @@ import Footer from './shared/components/Footer'
 import ScrollToTop from './shared/components/ScrollToTop'
 import { Toaster } from './shared/components/ui/toaster'
 import DashboardLayout from './shared/components/dashboard/Layout/DashboardLayout'
+import PrivateRoute from './components/PrivateRoute'
 
 // Pages
 import HomePage from './features/properties/pages/HomePage'
@@ -119,65 +120,81 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <DashboardLayout>
-              <DashboardPage />
-            </DashboardLayout>
+            <PrivateRoute roles={['Empleado', 'Administrador', 'Super Administrador']}>
+              <DashboardLayout>
+                <DashboardPage />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/dashboard/salesManagement"
           element={
-            <DashboardLayout>
-              <SalesManagementPage />
-            </DashboardLayout>
+            <PrivateRoute roles={['Empleado', 'Administrador', 'Super Administrador']}>
+              <DashboardLayout>
+                <SalesManagementPage />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/dashboard/buyersManagement"
           element={
-            <DashboardLayout>
-              <BuyersManagementPage />
-            </DashboardLayout>
+            <PrivateRoute roles={['Empleado', 'Administrador', 'Super Administrador']}>
+              <DashboardLayout>
+                <BuyersManagementPage />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/dashboard/leasesManagement"
           element={
-            <DashboardLayout>
-              <LeasesManagementPage />
-            </DashboardLayout>
+            <PrivateRoute roles={['Empleado', 'Administrador', 'Super Administrador']}>
+              <DashboardLayout>
+                <LeasesManagementPage />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/dashboard/renantManagement"
           element={
-            <DashboardLayout>
-              <RenantManagementPage />
-            </DashboardLayout>
+            <PrivateRoute roles={['Empleado', 'Administrador', 'Super Administrador']}>
+              <DashboardLayout>
+                <RenantManagementPage />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/dashboard/citas"
           element={
-            <DashboardLayout>
-              <AppointmentPage />
-            </DashboardLayout>
+            <PrivateRoute roles={['Empleado', 'Administrador', 'Super Administrador']}>
+              <DashboardLayout>
+                <AppointmentPage />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/reportes/gestion"
           element={
-            <DashboardLayout>
-              <Reports />
-            </DashboardLayout>
+            <PrivateRoute roles={['Empleado', 'Administrador', 'Super Administrador']}>
+              <DashboardLayout>
+                <Reports />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/seguridad/roles"
           element={
-            <DashboardLayout>
-              <Roles />
-            </DashboardLayout>
+            <PrivateRoute roles={['Administrador', 'Super Administrador']}>
+              <DashboardLayout>
+                <Roles />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
 

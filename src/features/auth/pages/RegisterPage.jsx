@@ -14,8 +14,7 @@ import {
   Trophy,
   Shield,
 } from "lucide-react";
-
-// Nota: Necesitarás crear o adaptar estos componentes de UI para tu proyecto
+import AuthService from "../../../services/auth.service";
 import { Button } from "../../../shared/components/ui/button";
 import { Input } from "../../../shared/components/ui/input";
 import { Label } from "../../../shared/components/ui/label";
@@ -25,6 +24,7 @@ export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -65,11 +65,39 @@ export default function RegistroPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    setTimeout(() => {
+    if (formData.password !== formData.confirmPassword) {
+      setError("Las contraseñas no coinciden");
       setIsLoading(false);
-      navigate("/dashboard");
-    }, 1500);
+      return;
+    }
+
+    try {
+      const result = await AuthService.register({
+        nombre: formData.nombre,
+        correo: formData.email,
+        telefono: formData.telefono,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        terminos: formData.terminos,
+      });
+
+      if (result.success) {
+        navigate("/");
+      }
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || "Error al registrar. Intenta nuevamente.";
+      const errors = err.response?.data?.errors;
+
+      if (errors && errors.length > 0) {
+        setError(errors.map(e => e.message).join(", "));
+      } else {
+        setError(errorMsg);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getPasswordStrengthScore = () => {
@@ -162,6 +190,13 @@ export default function RegistroPage() {
             <h2 className="text-3xl font-bold text-gray-900">Crea tu cuenta</h2>
             <p className="text-gray-600">Comienza tu viaje inmobiliario hoy mismo</p>
           </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl">
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+          )}
 
           {/* Formulario principal */}
           <form onSubmit={handleSubmit} className="space-y-5">

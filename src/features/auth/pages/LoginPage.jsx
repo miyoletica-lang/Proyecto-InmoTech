@@ -1,22 +1,42 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Shield, Users, Building2 } from "lucide-react"
+import AuthService from "../../../services/auth.service"
 
 export default function LoginPage() {
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
 
-    // Simulación de inicio de sesión
-    setTimeout(() => {
+    try {
+      const result = await AuthService.login(email, password)
+
+      if (result.success) {
+        const user = result.data.user
+        const hasAdminRole = user.roles.some(role =>
+          ['Super Administrador', 'Administrador', 'Empleado'].includes(role)
+        )
+
+        if (hasAdminRole) {
+          navigate("/dashboard")
+        } else {
+          navigate("/")
+        }
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Error al iniciar sesión. Verifica tus credenciales.")
+    } finally {
       setIsLoading(false)
-      window.location.href = "/dashboard" // usamos window.location en lugar de router.push
-    }, 1500)
+    }
   }
 
   return (
@@ -90,6 +110,13 @@ export default function LoginPage() {
             <h2 className="text-3xl font-bold text-gray-900">¡Hola de nuevo!</h2>
             <p className="text-gray-600">Ingresa tus credenciales para continuar</p>
           </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl">
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+          )}
 
           {/* Formulario */}
           <form onSubmit={handleSubmit} className="space-y-6">
